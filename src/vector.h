@@ -64,6 +64,10 @@ struct Vector {
   constexpr size_type size() const { return elements_.size(); }
   constexpr size_type max_size() const { return elements_.max_size(); }
 
+  void fill(const value_type &val) {
+    elements_.fill(val);
+  }
+
   void swap(Vector &other) {
     elements_.swap(other.elements_);
   }

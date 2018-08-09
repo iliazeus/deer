@@ -1,5 +1,6 @@
 set(SOURCES
   vector.h
+  matrix.h
 )
 #add_library(deer ${SOURCES})
 

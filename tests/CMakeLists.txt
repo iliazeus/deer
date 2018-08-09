@@ -4,6 +4,7 @@ add_subdirectory(../gtest ${CMAKE_BINARY_DIR}/gtest)
 
 set(SOURCES
   vector.cc
+  matrix.cc
 )
 
 add_executable(unit_tests ${SOURCES})

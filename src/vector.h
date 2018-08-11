@@ -267,6 +267,16 @@ using double2 = Vector<double, 2>;
 using double3 = Vector<double, 3>;
 using double4 = Vector<double, 4>;
 
+template<class T, std::size_t N>
+bool NearEqualForTesting(
+    const Vector<T, N> &a, const Vector<T, N> &b) {
+  const double EPS = 1e-6;
+  for (std::size_t i = 0; i < N; i++) {
+    if (std::abs(a[i] - b[i]) > EPS) return false;
+  }
+  return true;
+}
+
 }  // namespace deer
 
 #endif  // DEER_VECTOR_H_

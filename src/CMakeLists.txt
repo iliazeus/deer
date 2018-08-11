@@ -1,6 +1,8 @@
 set(SOURCES
   matrix.h
   scene.h
+  spectrum.cc
+  spectrum.h
   transform.cc
   transform.h
   vector.h

@@ -4,6 +4,7 @@ add_subdirectory(../gtest ${CMAKE_BINARY_DIR}/gtest)
 
 set(SOURCES
   matrix.cc
+  spectrum.cc
   transform.cc
   vector.cc
 )

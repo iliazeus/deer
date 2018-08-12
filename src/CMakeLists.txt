@@ -1,4 +1,6 @@
 set(SOURCES
+  geometry.cc
+  geometry.h
   matrix.h
   scene.h
   spectrum.cc

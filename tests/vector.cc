@@ -61,3 +61,16 @@ TEST_F(VectorTest, DoesVectorOps) {
     EXPECT_EQ(deer::cross(v, w), expected);
   }
 }
+
+TEST_F(VectorTest, DoesProjectReflect) {
+  deer::int2 v{2, 2};
+  deer::int2 w{0, -1};
+  {
+    auto expected = deer::int2{0, 2};
+    EXPECT_EQ(v.projectOnto(w), expected);
+  }
+  {
+    auto expected = deer::int2{2, -2};
+    EXPECT_EQ(v.reflectOff(w), expected);
+  }
+}

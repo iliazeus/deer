@@ -8,7 +8,6 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
-#include <exception>
 
 namespace deer {
 
@@ -216,6 +215,14 @@ struct Vector {
   long double llength() const { return std::sqrt((long double) length2()); }
 
   // TODO(iliazeus): signed volume
+
+  Vector projectOnto(const Vector &onto) {
+    return onto * dot(onto, *this) / onto.length2();
+  }
+
+  Vector reflectOff(const Vector &normal) {
+    return *this - 2 * this->projectOnto(normal);
+  }
 
   static Vector zero() {
     Vector result;

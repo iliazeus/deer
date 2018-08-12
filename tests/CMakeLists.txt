@@ -3,6 +3,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0048 OLD)
 add_subdirectory(../gtest ${CMAKE_BINARY_DIR}/gtest)
 
 set(SOURCES
+  geometry.cc
   matrix.cc
   spectrum.cc
   transform.cc

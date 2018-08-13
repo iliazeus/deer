@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "geometry.h"
 #include "transform.h"
 
 namespace deer {
@@ -20,11 +21,38 @@ class SceneObject {
 
   virtual ~SceneObject() {}
 
+  const double4 &position() const { return transform_.matrix()[3]; }
+
  protected:
   AffineTransform transform_;
 
-  SceneObject();
-  explicit SceneObject(const AffineTransform &transform);
+  explicit SceneObject(const AffineTransform &transform = {})
+      : transform_(transform) {}
+};
+
+class GeometryObject : public SceneObject {
+ public:
+  explicit GeometryObject(std::shared_ptr<Geometry> geometry,
+      const AffineTransform &transform = {})
+      : SceneObject(transform)
+      , geometry_(geometry) {}
+
+ protected:
+  std::shared_ptr<Geometry> geometry_;
+};
+
+class CameraObject : public SceneObject {
+ public:
+  explicit CameraObject(const AffineTransform &transform = {})
+      : SceneObject(transform) {}
+  CameraObject(double width, double height, double fov) {
+    transform_.Scale(width, height, fov);
+  }
+
+  double width() const { return transform_.matrix()[0].length(); }
+  double height() const { return transform_.matrix()[1].length(); }
+  double fov() const { return transform_.matrix()[2].length(); }
+  double4 line_of_sight() const { return transform_.matrix()[2]; }
 };
 
 class Scene {

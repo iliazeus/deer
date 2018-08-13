@@ -16,6 +16,9 @@ class AffineTransform {
   explicit AffineTransform(double4x4 matrix);
   static AffineTransform FromInverseMatrix(double4x4 inv_matrix);
 
+  const double4x4 &matrix() const { return matrix_; }
+  const double4x4 &inverse_matrix() const { return inv_matrix_; }
+
   static AffineTransform MakeTranslation(double x, double y, double z);
   static AffineTransform MakeTranslation(double3 v);
   static AffineTransform MakeTranslation(double4 v);

@@ -67,10 +67,10 @@ TEST_F(VectorTest, DoesProjectReflect) {
   deer::int2 w{0, -1};
   {
     auto expected = deer::int2{0, 2};
-    EXPECT_EQ(v.projectOnto(w), expected);
+    EXPECT_EQ(v.project_onto(w), expected);
   }
   {
     auto expected = deer::int2{2, -2};
-    EXPECT_EQ(v.reflectOff(w), expected);
+    EXPECT_EQ(v.reflect_off(w), expected);
   }
 }

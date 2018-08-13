@@ -210,18 +210,18 @@ struct Vector {
     return result;
   }
 
-  float flength() const { return std::sqrt((float) length2()); }
-  double length() const { return std::sqrt((double) length2()); }
-  long double llength() const { return std::sqrt((long double) length2()); }
+  float flength() const { return std::sqrt(float{length2()}); }
+  double length() const { return std::sqrt(double{length2()}); }
+  long double llength() const { return std::sqrt((long double){length2()}); }
 
   // TODO(iliazeus): signed volume
 
-  Vector projectOnto(const Vector &onto) {
+  Vector project_onto(const Vector &onto) const {
     return onto * dot(onto, *this) / onto.length2();
   }
 
-  Vector reflectOff(const Vector &normal) {
-    return *this - 2 * this->projectOnto(normal);
+  Vector reflect_off(const Vector &normal) const {
+    return *this - 2 * this->project_onto(normal);
   }
 
   static Vector zero() {

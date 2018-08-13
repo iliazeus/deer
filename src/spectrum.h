@@ -31,7 +31,7 @@ struct ConstantSpectrum : public Spectrum {
   double value = 0;
   double intensity(double freq) const override { return value; }
 
-  ConstantSpectrum(double v) : value(v) {}
+  explicit ConstantSpectrum(double v) : value(v) {}
 };
 
 struct MonochromeSpectrum : public Spectrum {

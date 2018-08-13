@@ -24,7 +24,7 @@ class SceneObject {
   AffineTransform transform_;
 
   SceneObject();
-  SceneObject(const AffineTransform &transform);
+  explicit SceneObject(const AffineTransform &transform);
 };
 
 class Scene {

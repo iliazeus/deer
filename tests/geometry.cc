@@ -23,7 +23,7 @@ TEST_F(GeometryTest, XYPlaneDoesRayIntersection) {
   auto expected_intersection_point = deer::double4{10, 8, 0, 1};
 
   EXPECT_EQ(result.point, expected_intersection_point);
-  EXPECT_EQ(result.normal.projectOnto(expected_normal_direction),
+  EXPECT_EQ(result.normal.project_onto(expected_normal_direction),
       result.normal);
 
   ray.direction *= -1;

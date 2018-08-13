@@ -18,12 +18,12 @@ struct Geometry {
   virtual ~Geometry() {}
 };
 
-struct XYPlane : public Geometry {
+struct XYPlaneGeometry : public Geometry {
   std::optional<RayIntersection> IntersectWithRay(
       const Ray &) const override;
 };
 
-struct UnitSphere : public Geometry {
+struct UnitSphereGeometry : public Geometry {
   std::optional<RayIntersection> IntersectWithRay(
       const Ray &) const override;
 };

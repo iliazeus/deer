@@ -13,8 +13,8 @@
 
 class GeometryTest : public ::testing::Test {};
 
-TEST_F(GeometryTest, XYPlaneDoesRayIntersection) {
-  auto plane = deer::XYPlane();
+TEST_F(GeometryTest, XYPlaneGeometryDoesRayIntersection) {
+  auto plane = deer::XYPlaneGeometry();
   auto ray = deer::Ray{deer::double4{1, 2, 3, 1},
       deer::double4{3, 2, -1, 0}};
 
@@ -32,7 +32,7 @@ TEST_F(GeometryTest, XYPlaneDoesRayIntersection) {
 }
 
 TEST_F(GeometryTest, UnitSphereDoesRayIntersection) {
-  auto sphere = deer::UnitSphere();
+  auto sphere = deer::UnitSphereGeometry();
   auto inner_ray = deer::Ray{deer::double4{0, 0, 0, 1},
       deer::double4{1, 2, 3, 0}};
   auto outer_ray = deer::Ray{deer::double4{1, 2, 3, 1},

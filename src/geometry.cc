@@ -15,7 +15,7 @@
 namespace deer {
 
 
-std::optional<RayIntersection> XYPlane::IntersectWithRay(
+std::optional<RayIntersection> XYPlaneGeometry::IntersectWithRay(
     const Ray &ray) const {
   double d = ray.origin.z() * ray.direction.z();
   if (d >= 0) return {};
@@ -26,7 +26,7 @@ std::optional<RayIntersection> XYPlane::IntersectWithRay(
 }
 
 
-std::optional<RayIntersection> UnitSphere::IntersectWithRay(
+std::optional<RayIntersection> UnitSphereGeometry::IntersectWithRay(
     const Ray &ray) const {
   double4 r = ray.origin - double4{0, 0, 0, 1};
   double4 d = ray.direction;

@@ -8,6 +8,8 @@
 #include <cmath>
 #include <optional>
 
+#include "optics.h"
+#include "spectrum.h"
 #include "vector.h"
 
 namespace deer {

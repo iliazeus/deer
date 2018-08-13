@@ -8,14 +8,15 @@
 
 #include <gtest/gtest.h>
 
+#include "../src/optics.h"
 #include "../src/vector.h"
 
 class GeometryTest : public ::testing::Test {};
 
 TEST_F(GeometryTest, XYPlaneDoesRayIntersection) {
   auto plane = deer::XYPlane();
-  auto ray = deer::Ray(deer::double4{1, 2, 3, 1},
-      deer::double4{3, 2, -1, 0});
+  auto ray = deer::Ray{deer::double4{1, 2, 3, 1},
+      deer::double4{3, 2, -1, 0}};
 
   auto result = plane.IntersectWithRay(ray).value();
 
@@ -32,10 +33,10 @@ TEST_F(GeometryTest, XYPlaneDoesRayIntersection) {
 
 TEST_F(GeometryTest, UnitSphereDoesRayIntersection) {
   auto sphere = deer::UnitSphere();
-  auto inner_ray = deer::Ray(deer::double4{0, 0, 0, 1},
-      deer::double4{1, 2, 3, 0});
-  auto outer_ray = deer::Ray(deer::double4{1, 2, 3, 1},
-      deer::double4{-1, -2, -3, 0});
+  auto inner_ray = deer::Ray{deer::double4{0, 0, 0, 1},
+      deer::double4{1, 2, 3, 0}};
+  auto outer_ray = deer::Ray{deer::double4{1, 2, 3, 1},
+      deer::double4{-1, -2, -3, 0}};
 
   auto inner_result = sphere.IntersectWithRay(inner_ray).value();
   auto outer_result = sphere.IntersectWithRay(outer_ray).value();

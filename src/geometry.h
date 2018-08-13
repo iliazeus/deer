@@ -5,23 +5,12 @@
 #ifndef DEER_GEOMETRY_H_
 #define DEER_GEOMETRY_H_
 
-#include "vector.h"
-
 #include <optional>
 
+#include "optics.h"
+#include "vector.h"
+
 namespace deer {
-
-struct Ray {
-  double4 origin;
-  double4 direction;
-
-  Ray(double4 o, double4 d) : origin(o), direction(d) {}
-};
-
-struct RayIntersection {
-  double4 point;
-  double4 normal;
-};
 
 struct Geometry {
   virtual std::optional<RayIntersection> IntersectWithRay(

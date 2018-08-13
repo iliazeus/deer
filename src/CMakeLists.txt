@@ -2,6 +2,7 @@ set(SOURCES
   geometry.cc
   geometry.h
   matrix.h
+  optics.h
   scene.h
   spectrum.cc
   spectrum.h

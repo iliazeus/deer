@@ -224,6 +224,8 @@ struct Vector {
     return *this - 2 * this->project_onto(normal);
   }
 
+  // TODO(iliazeus): refraction
+
   static Vector zero() {
     Vector result;
     result.fill(0);

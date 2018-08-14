@@ -1,4 +1,6 @@
 set(SOURCES
+  file_formats/tga.cc
+  file_formats/tga.h
   geometry.cc
   geometry.h
   matrix.h

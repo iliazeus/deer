@@ -256,4 +256,22 @@ std::vector<std::uint8_t> TgaImageFile::RgbaToBgra(
   return data;
 }
 
+bool operator==(const TgaImageFile::Header &a,
+                const TgaImageFile::Header &b) {
+  return a.id_length == b.id_length
+      && a.color_map_type == b.color_map_type
+      && a.image_type == b.image_type
+      && a.color_map_first == b.color_map_first
+      && a.color_map_length == b.color_map_length
+      && a.color_map_depth == b.color_map_depth
+      && a.origin_x == b.origin_x
+      && a.origin_y == b.origin_y
+      && a.width == b.width
+      && a.height == b.height
+      && a.pixel_depth == b.pixel_depth
+      && a.alpha_depth == b.alpha_depth
+      && a.horizontal_direction == b.horizontal_direction
+      && a.vertical_direction == b.vertical_direction;
+}
+
 }  // namespace deer

@@ -105,6 +105,9 @@ class TgaImageFile {
   bool has_read_header_ = false;
 };
 
+// For testing
+bool operator==(const TgaImageFile::Header &, const TgaImageFile::Header &);
+
 }  // namespace deer
 
 #endif  // DEER_TGA_H_

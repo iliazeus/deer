@@ -6,64 +6,82 @@
 #define DEER_SCENE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "geometry.h"
+#include "optics.h"
 #include "transform.h"
 
 namespace deer {
 
 class SceneObject {
  public:
-  // from object space into scene space
-  AffineTransform &transform() { return transform_; }
-  const AffineTransform &transform() const { return transform_; }
+  // Transforms from object coords to scene coords.
+  AffineTransform transform;
 
   virtual ~SceneObject() {}
 
-  const double4 &position() const { return transform_.matrix()[3]; }
+  const double4 &position() const { return transform.matrix()[3]; }
+
+  virtual std::optional<RayIntersection> IntersectWithRay(
+      const Ray &) const = 0;
 
  protected:
-  AffineTransform transform_;
-
-  explicit SceneObject(const AffineTransform &transform = {})
-      : transform_(transform) {}
+  explicit SceneObject(const AffineTransform &t = {})
+      : transform(t) {}
 };
 
 class GeometryObject : public SceneObject {
  public:
   explicit GeometryObject(std::shared_ptr<Geometry> geometry,
-      const AffineTransform &transform = {})
+                          std::shared_ptr<Material> material,
+                          const AffineTransform &transform = {})
       : SceneObject(transform)
-      , geometry_(geometry) {}
+      , geometry_(geometry)
+      , material_(material) {}
+
+  std::optional<RayIntersection> IntersectWithRay(
+      const Ray &ray) const override {
+    auto object_space_ray = Ray{
+      transform.ApplyInverse(ray.origin),
+      transform.ApplyInverse(ray.direction)
+    };
+    auto result = geometry_->IntersectWithRay(object_space_ray);
+    if (result) result->material = material_;
+    return result;
+  }
 
  protected:
   std::shared_ptr<Geometry> geometry_;
+  std::shared_ptr<Material> material_;
 };
 
 class CameraObject : public SceneObject {
  public:
   explicit CameraObject(const AffineTransform &transform = {})
       : SceneObject(transform) {}
-  CameraObject(double width, double height, double fov) {
-    transform_.Scale(width, height, fov);
+  CameraObject(double width, double height, double focal_length) {
+    transform.Scale(width, height, focal_length);
   }
 
-  double width() const { return transform_.matrix()[0].length(); }
-  double height() const { return transform_.matrix()[1].length(); }
-  double fov() const { return transform_.matrix()[2].length(); }
-  double4 line_of_sight() const { return transform_.matrix()[2]; }
+  std::optional<RayIntersection> IntersectWithRay(
+      const Ray &) const override {
+    return {};
+  }
+
+  double width() const { return transform.matrix()[0].length(); }
+  double height() const { return transform.matrix()[1].length(); }
+  double focal_length() const { return transform.matrix()[2].length(); }
+  double4 line_of_sight() const { return transform.matrix()[2]; }
 };
 
-class Scene {
- public:
-  std::vector<std::shared_ptr<SceneObject>> &objects() { return objects_; }
-  const std::vector<std::shared_ptr<SceneObject>> &objects() const {
-    return objects_;
-  }
-
- protected:
-  std::vector<std::shared_ptr<SceneObject>> objects_;
+struct Scene {
+  std::vector<std::shared_ptr<SceneObject>> objects;
+  std::shared_ptr<Spectrum> sky_spectrum =
+      std::make_shared<ConstantSpectrum>(0);
+  std::shared_ptr<Spectrum> ambiance_spectrum =
+      std::make_shared<ConstantSpectrum>(1);
 };
 
 }  // namespace deer

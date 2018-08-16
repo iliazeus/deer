@@ -5,6 +5,7 @@ set(SOURCES
   geometry.h
   matrix.h
   optics.h
+  renderer.h
   scene.h
   spectrum.cc
   spectrum.h

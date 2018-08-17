@@ -25,7 +25,7 @@ class Renderer {
   };
 
   virtual std::shared_ptr<JobStatus> Render(const Scene &,
-                                            const CameraObject &) = 0;
+                                            const Camera &) = 0;
   virtual ~Renderer() {}
 };
 
@@ -40,7 +40,7 @@ class RayTracer : public Renderer {
   explicit RayTracer(const Options &opts) : options(opts) {}
 
   std::shared_ptr<JobStatus> Render(const Scene &,
-                                    const CameraObject &) override;
+                                    const Camera &) override;
 };
 
 }  // namespace deer

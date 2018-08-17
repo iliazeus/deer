@@ -5,6 +5,7 @@
 #ifndef DEER_SCENE_H_
 #define DEER_SCENE_H_
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -61,31 +62,52 @@ class GeometryObject : public SceneObject {
   std::shared_ptr<Material> material_;
 };
 
-class CameraObject : public SceneObject {
+class Camera {
  public:
-  explicit CameraObject(const AffineTransform &transform = {})
-      : SceneObject(transform) {}
-  CameraObject(double width, double height, double focal_length) {
+  explicit Camera(const AffineTransform &t = {}) : transform(t) {}
+  Camera(double width, double height, double focal_length) {
     transform.Scale(width, height, focal_length);
   }
 
-  std::optional<RayIntersection> IntersectWithRay(
-      const Ray &) const override {
-    return {};
-  }
-
+  const double4 &position() const { return transform.matrix()[3]; }
   double width() const { return transform.matrix()[0].length(); }
   double height() const { return transform.matrix()[1].length(); }
   double focal_length() const { return transform.matrix()[2].length(); }
   double4 line_of_sight() const { return transform.matrix()[2]; }
+
+  AffineTransform transform;
 };
 
-struct Scene {
-  std::vector<std::shared_ptr<SceneObject>> objects;
+class Scene {
+ public:
   std::shared_ptr<Spectrum> sky_spectrum =
       std::make_shared<ConstantSpectrum>(0);
   std::shared_ptr<Spectrum> ambiance_spectrum =
       std::make_shared<ConstantSpectrum>(1);
+
+  const std::vector<std::shared_ptr<SceneObject>> &objects() const {
+    return objects_;
+  }
+  void AddObject(std::shared_ptr<SceneObject> object) {
+    objects_.push_back(object);
+  }
+  void RemoveObject(std::shared_ptr<SceneObject> object) {
+    objects_.erase(std::find(objects_.begin(), objects_.end(), object));
+  }
+
+  const std::vector<std::shared_ptr<Camera>> &cameras() const {
+    return cameras_;
+  }
+  void AddCamera(std::shared_ptr<Camera> camera) {
+    cameras_.push_back(camera);
+  }
+  void RemoveCamera(std::shared_ptr<Camera> camera) {
+    cameras_.erase(std::find(cameras_.begin(), cameras_.end(), camera));
+  }
+
+ private:
+  std::vector<std::shared_ptr<SceneObject>> objects_;
+  std::vector<std::shared_ptr<Camera>> cameras_;
 };
 
 }  // namespace deer

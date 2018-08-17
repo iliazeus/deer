@@ -42,15 +42,15 @@ static Scene SetUpScene() {
 
   auto sphere_geometry = std::make_shared<UnitSphereGeometry>();
 
-  scene.objects.push_back(std::make_shared<GeometryObject>(
+  scene.AddObject(std::make_shared<GeometryObject>(
       sphere_geometry,
       red_material,
       AffineTransform().Translate(-3, 0, 0)));
-  scene.objects.push_back(std::make_shared<GeometryObject>(
+  scene.AddObject(std::make_shared<GeometryObject>(
       sphere_geometry,
       green_material,
       AffineTransform().Translate(0, 0, 0)));
-  scene.objects.push_back(std::make_shared<GeometryObject>(
+  scene.AddObject(std::make_shared<GeometryObject>(
       sphere_geometry,
       blue_material,
       AffineTransform().Translate(3, 0, 0)));
@@ -58,8 +58,8 @@ static Scene SetUpScene() {
   return scene;
 }
 
-static CameraObject SetUpCamera() {
-  CameraObject camera(16.0 / 9.0, 1, 1);
+static Camera SetUpCamera() {
+  Camera camera(16.0 / 9.0, 1, 1);
   camera.transform.Translate(0, 0, -5);
   return camera;
 }
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
   }
 
   Scene scene = SetUpScene();
-  CameraObject camera = SetUpCamera();
+  Camera camera = SetUpCamera();
   RayTracer renderer = SetUpRayTracer();
 
   auto job_status = renderer.Render(scene, camera);

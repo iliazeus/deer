@@ -26,7 +26,7 @@ namespace {
 constexpr auto kLaunchPolicy = std::launch::deferred;
 
 Ray RayThroughPixel(const RayTracer &tracer,
-                    const CameraObject &camera,
+                    const Camera &camera,
                     std::size_t row, std::size_t col) {
   const double  image_width  = tracer.options.image_width;
   const double  image_height = tracer.options.image_height;
@@ -45,7 +45,7 @@ std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
   // Find a closest (if any) intersection.
   std::optional<RayIntersection> isec = {};
   double len2;
-  for (const auto &object : scene.objects) {
+  for (const auto &object : scene.objects()) {
     auto current_isec = object->IntersectWithRay(ray);
     if (!current_isec) continue;
     double current_len2 = length2(current_isec->point - ray.origin);
@@ -65,7 +65,7 @@ std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
 
 void RenderPixels(const RayTracer &tracer,
                   const Scene &scene,
-                  const CameraObject &camera,
+                  const Camera &camera,
                   std::promise<std::vector<std::uint8_t>> &&result_promise,
                   std::shared_ptr<Renderer::JobStatus> job_status) {
   const std::size_t kMaxQueueLength = 50;
@@ -108,7 +108,7 @@ void RenderPixels(const RayTracer &tracer,
 }  // namespace
 
 std::shared_ptr<Renderer::JobStatus> RayTracer::Render(const Scene &scene,
-    const CameraObject &camera) {
+    const Camera &camera) {
   // TODO(iliazeus): track the amount_done
   auto job_status = std::make_shared<Renderer::JobStatus>();
   job_status->amount_done = 0;

@@ -12,7 +12,9 @@
 
 #include <gtest/gtest.h>
 
-using deer::TgaImageFile;
+namespace deer {
+
+namespace test {
 
 class TgaImageFileTest : public ::testing::Test {};
 
@@ -72,3 +74,7 @@ TEST_F(TgaImageFileTest, ReadsWhatItWrites) {
   EXPECT_EQ(output_image.color_map_data, input_image.color_map_data);
   EXPECT_EQ(output_image.image_data, input_image.image_data);
 }
+
+}  // namespace test
+
+}  // namespace deer

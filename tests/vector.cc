@@ -6,10 +6,14 @@
 
 #include <gtest/gtest.h>
 
+namespace deer {
+
+namespace test {
+
 class VectorTest : public ::testing::Test {};
 
 TEST_F(VectorTest, IsContainer) {
-  deer::int3 v{1, 2, 3};
+  int3 v{1, 2, 3};
   EXPECT_EQ(v.size(), 3ull);
   EXPECT_EQ(v[1], 2);
   {
@@ -20,35 +24,35 @@ TEST_F(VectorTest, IsContainer) {
 }
 
 TEST_F(VectorTest, DoesArithmetic) {
-  deer::int3 v{1, 2, 3};
-  deer::int3 w{0, 1, -1};
+  int3 v{1, 2, 3};
+  int3 w{0, 1, -1};
   {
-    auto expected = deer::int3{1, 3, 2};
+    auto expected = int3{1, 3, 2};
     EXPECT_EQ(v + w, expected);
   }
   {
-    auto expected = deer::int3{1, 1, 4};
+    auto expected = int3{1, 1, 4};
     EXPECT_EQ(v - w, expected);
   }
   {
-    auto expected = deer::int3{0, 2, -3};
+    auto expected = int3{0, 2, -3};
     EXPECT_EQ(v * w, expected);
   }
 }
 
 TEST_F(VectorTest, DoesVectorOps) {
-  deer::int3 v{1, 2, 3};
-  deer::int3 w{0, 1, -1};
+  int3 v{1, 2, 3};
+  int3 w{0, 1, -1};
   {
-    auto expected = deer::int3{2, 4, 6};
+    auto expected = int3{2, 4, 6};
     EXPECT_EQ(v * 2, expected);
   }
   {
-    auto expected = deer::int3{0, 2, -2};
+    auto expected = int3{0, 2, -2};
     EXPECT_EQ(2 * w, expected);
   }
   {
-    auto expected = deer::int3{0, 1, 1};
+    auto expected = int3{0, 1, 1};
     EXPECT_EQ(v / 2, expected);
   }
   EXPECT_EQ(v.length2(), 14);
@@ -57,20 +61,24 @@ TEST_F(VectorTest, DoesVectorOps) {
     EXPECT_EQ(actual, -1);
   }
   {
-    auto expected = deer::int3{-5, 1, 1};
-    EXPECT_EQ(deer::cross(v, w), expected);
+    auto expected = int3{-5, 1, 1};
+    EXPECT_EQ(cross(v, w), expected);
   }
 }
 
 TEST_F(VectorTest, DoesProjectReflect) {
-  deer::int2 v{2, 2};
-  deer::int2 w{0, -1};
+  int2 v{2, 2};
+  int2 w{0, -1};
   {
-    auto expected = deer::int2{0, 2};
+    auto expected = int2{0, 2};
     EXPECT_EQ(v.project_onto(w), expected);
   }
   {
-    auto expected = deer::int2{2, -2};
+    auto expected = int2{2, -2};
     EXPECT_EQ(v.reflect_off(w), expected);
   }
 }
+
+}  // namespace test
+
+}  // namespace deer

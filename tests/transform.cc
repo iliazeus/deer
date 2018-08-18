@@ -8,26 +8,30 @@
 
 #include <gtest/gtest.h>
 
+namespace deer {
+
+namespace test {
+
 class TransformTest : public ::testing::Test {};
 
 TEST_F(TransformTest, AffineTransformTranslate) {
-  auto point = deer::double4{1, 2, 3, 1};
-  auto vector = deer::double4{1, 2, 3, 0};
+  auto point = double4{1, 2, 3, 1};
+  auto vector = double4{1, 2, 3, 0};
 
-  auto transform = deer::AffineTransform().Translate(2, 0, 1);
+  auto transform = AffineTransform().Translate(2, 0, 1);
 
-  auto expected_point = deer::double4{3, 2, 4, 1};
+  auto expected_point = double4{3, 2, 4, 1};
   EXPECT_EQ(transform.Apply(point), expected_point);
 
   EXPECT_EQ(transform.Apply(vector), vector);
 }
 
 TEST_F(TransformTest, AffineTransformScale) {
-  auto point1 = deer::double4{1, 2, 3, 1};
-  auto point2 = deer::double4{2, 0, 1, 1};
-  auto vector = deer::double4{1, 2, 3, 0};
+  auto point1 = double4{1, 2, 3, 1};
+  auto point2 = double4{2, 0, 1, 1};
+  auto vector = double4{1, 2, 3, 0};
 
-  auto transform = deer::AffineTransform().Scale(2);
+  auto transform = AffineTransform().Scale(2);
 
   EXPECT_EQ(transform.Apply(vector), 2 * vector);
 
@@ -37,30 +41,29 @@ TEST_F(TransformTest, AffineTransformScale) {
 }
 
 TEST_F(TransformTest, AffineTransformRotate) {
-  auto point = deer::double4{1, 2, 3, 1};
-  auto vector = deer::double4{1, 2, 3, 0};
+  auto point = double4{1, 2, 3, 1};
+  auto vector = double4{1, 2, 3, 0};
 
   double half_pi = std::acos(0);
-  auto transform = deer::AffineTransform().RotateX(half_pi);
+  auto transform = AffineTransform().RotateX(half_pi);
 
-  auto expected_point = deer::double4{1, -3, 2, 1};
-  auto expected_vector = deer::double4{1, -3, 2, 0};
+  auto expected_point = double4{1, -3, 2, 1};
+  auto expected_vector = double4{1, -3, 2, 0};
 
   EXPECT_EQ(transform.Apply(point), expected_point);
   EXPECT_EQ(transform.Apply(vector), expected_vector);
 }
 
 TEST_F(TransformTest, AffineTransformInverse) {
-  auto point = deer::double4{1, 2, 3, 1};
-  auto vector = deer::double4{1, 2, 3, 0};
+  auto point = double4{1, 2, 3, 1};
+  auto vector = double4{1, 2, 3, 0};
 
-  auto transform = deer::AffineTransform()
+  auto transform = AffineTransform()
       .Translate(2, 3, 1)
       .RotateY(2)
       .Scale(1, 3, 2);
 
-  bool (&near_equal)(const deer::double4 &, const deer::double4 &)
-      = deer::NearEqualForTesting;
+  bool (&near_equal)(const double4 &, const double4 &) = NearEqualForTesting;
 
   auto p_trans = transform.ApplyInverse(transform.Apply(point));
   EXPECT_TRUE(near_equal(p_trans, point));
@@ -68,3 +71,7 @@ TEST_F(TransformTest, AffineTransformInverse) {
   auto v_trans = transform.ApplyInverse(transform.Apply(vector));
   EXPECT_TRUE(near_equal(v_trans, vector));
 }
+
+}  // namespace test
+
+}  // namespace deer

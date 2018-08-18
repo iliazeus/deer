@@ -2,6 +2,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE.txt file for details.
 
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -55,6 +56,19 @@ static Scene SetUpScene() {
       blue_material,
       AffineTransform().Translate(3, 0, 0)));
 
+  auto white_material = std::make_shared<Material>();
+  white_material->diffusion_spectrum =
+      std::make_shared<ConstantSpectrum>(255);
+
+  scene.Add(std::make_shared<GeometryObject>(
+      std::make_shared<XYPlaneGeometry>(),
+      white_material,
+      AffineTransform().RotateX(std::acos(0)).Translate(0, -2, 0)));
+
+  scene.ambiance_spectrum = std::make_shared<ConstantSpectrum>(0.5);
+  scene.Add(std::make_shared<PointLightSource>(
+      double4{-3, 3, -3, 1}, std::make_shared<ConstantSpectrum>(0.5)));
+
   return scene;
 }
 
@@ -66,8 +80,8 @@ static Camera SetUpCamera() {
 
 static RayTracer SetUpRayTracer() {
   RayTracer::Options options;
-  options.image_width = 320;
-  options.image_height = 180;
+  options.image_width = 640;
+  options.image_height = 360;
   options.r_freq = 0;
   options.g_freq = 1;
   options.b_freq = 2;
@@ -85,8 +99,8 @@ static TgaImageFile::Header SetUpTgaImageFileHeader() {
   header.color_map_depth = 0;
   header.origin_x = 0;
   header.origin_y = 0;
-  header.width = 320;
-  header.height = 180;
+  header.width = 640;
+  header.height = 360;
   header.pixel_depth = 24;
   header.alpha_depth = 0;
   header.horizontal_direction =

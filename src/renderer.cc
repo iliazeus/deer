@@ -30,8 +30,8 @@ Ray RayThroughPixel(const RayTracer &tracer,
                     std::size_t row, std::size_t col) {
   const double  image_width  = tracer.options.image_width;
   const double  image_height = tracer.options.image_height;
-  const double  screen_x = col / (image_width  / 2) - 1;
-  const double  screen_y = row / (image_height / 2) - 1;
+  const double  screen_x =    col / (image_width  / 2) - 1;
+  const double  screen_y = - (row / (image_height / 2) - 1);
   const double4 camera_space_direction = double4{screen_x, screen_y, 1, 0};
   const double4 direction = camera.transform.Apply(camera_space_direction);
   return Ray{camera.position(), direction};

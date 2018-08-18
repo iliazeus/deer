@@ -37,12 +37,8 @@ Ray RayThroughPixel(const RayTracer &tracer,
   return Ray{camera.position(), direction};
 }
 
-std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
-                                   const Scene &scene,
-                                   const Ray &ray) {
-  // TODO(iliazeus): a whole bunch of proper rendering
-
-  // Find a closest (if any) intersection.
+std::optional<RayIntersection> TraceRayThroughSceneObjects(
+    const RayTracer &tracer, const Scene &scene, const Ray &ray) {
   std::optional<RayIntersection> isec = {};
   double len2;
   for (const auto &object : scene.objects()) {
@@ -54,13 +50,42 @@ std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
       len2 = current_len2;
     }
   }
+  return isec;
+}
+
+std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
+                                   const Scene &scene,
+                                   const Ray &ray) {
+  // TODO(iliazeus): a whole bunch of proper rendering
+
+  // Find a closest (if any) intersection.
+  const auto isec = TraceRayThroughSceneObjects(tracer, scene, ray);
 
   // If no intersection found, then we hit the sky.
   if (!isec) return scene.sky_spectrum;
 
-  // Currently, only ambiance lighting is implemented.
-  return Spectrum::product(isec->material->diffusion_spectrum,
-      scene.ambiance_spectrum);
+  const double kLightingEps = 1e-6;
+  auto lighting_spectrum = scene.ambiance_spectrum;
+
+  // Check if each of the point light sources is reachable, modifying
+  // the total lighting_spectrum.
+  for (const auto &source : scene.point_light_sources()) {
+    const double4 ray_origin = isec->point + kLightingEps * isec->normal;
+    const double4 ray_direction = source->position - ray_origin;
+    const Ray ray{ray_origin, ray_direction};
+    const auto light_isec = TraceRayThroughSceneObjects(tracer, scene, ray);
+    if (light_isec) {
+      if (length2(light_isec->point - ray_origin) < length2(ray_direction)) {
+        continue;
+      }
+    }
+    lighting_spectrum = Spectrum::sum(lighting_spectrum, source->spectrum);
+  }
+
+  const auto result_spectrum = Spectrum::product(
+      isec->material->diffusion_spectrum, lighting_spectrum);
+
+  return result_spectrum;
 }
 
 void RenderPixels(const RayTracer &tracer,

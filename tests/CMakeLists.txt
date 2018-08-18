@@ -6,6 +6,7 @@ set(SOURCES
   file_formats/tga.cc
   geometry.cc
   matrix.cc
+  scene.cc
   spectrum.cc
   transform.cc
   vector.cc

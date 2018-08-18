@@ -42,15 +42,15 @@ static Scene SetUpScene() {
 
   auto sphere_geometry = std::make_shared<UnitSphereGeometry>();
 
-  scene.AddObject(std::make_shared<GeometryObject>(
+  scene.Add(std::make_shared<GeometryObject>(
       sphere_geometry,
       red_material,
       AffineTransform().Translate(-3, 0, 0)));
-  scene.AddObject(std::make_shared<GeometryObject>(
+  scene.Add(std::make_shared<GeometryObject>(
       sphere_geometry,
       green_material,
       AffineTransform().Translate(0, 0, 0)));
-  scene.AddObject(std::make_shared<GeometryObject>(
+  scene.Add(std::make_shared<GeometryObject>(
       sphere_geometry,
       blue_material,
       AffineTransform().Translate(3, 0, 0)));

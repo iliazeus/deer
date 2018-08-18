@@ -23,20 +23,20 @@ TEST_F(SceneTest, StroresThings) {
   EXPECT_EQ(scene.point_light_sources().size(), 0u);
 
   auto object = std::make_shared<GeometryObject>(nullptr, nullptr);
-  scene.AddObject(object);
+  scene.Add(object);
   auto camera = std::make_shared<Camera>();
-  scene.AddCamera(camera);
+  scene.Add(camera);
   auto point_light_source = std::make_shared<PointLightSource>(
       double4::zero(), nullptr);
-  scene.AddPointLightSource(point_light_source);
+  scene.Add(point_light_source);
 
   EXPECT_EQ(scene.objects().size(), 1u);
   EXPECT_EQ(scene.cameras().size(), 1u);
   EXPECT_EQ(scene.point_light_sources().size(), 1u);
 
-  scene.RemoveObject(object);
-  scene.RemoveCamera(camera);
-  scene.RemovePointLightSource(point_light_source);
+  scene.Remove(object);
+  scene.Remove(camera);
+  scene.Remove(point_light_source);
 
   EXPECT_EQ(scene.objects().size(), 0u);
   EXPECT_EQ(scene.cameras().size(), 0u);

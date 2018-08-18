@@ -99,20 +99,20 @@ class Scene {
   const std::vector<std::shared_ptr<SceneObject>> &objects() const {
     return objects_;
   }
-  void AddObject(std::shared_ptr<SceneObject> object) {
+  void Add(std::shared_ptr<SceneObject> object) {
     objects_.push_back(object);
   }
-  void RemoveObject(std::shared_ptr<SceneObject> object) {
+  void Remove(std::shared_ptr<SceneObject> object) {
     objects_.erase(std::find(objects_.begin(), objects_.end(), object));
   }
 
   const std::vector<std::shared_ptr<Camera>> &cameras() const {
     return cameras_;
   }
-  void AddCamera(std::shared_ptr<Camera> camera) {
+  void Add(std::shared_ptr<Camera> camera) {
     cameras_.push_back(camera);
   }
-  void RemoveCamera(std::shared_ptr<Camera> camera) {
+  void Remove(std::shared_ptr<Camera> camera) {
     cameras_.erase(std::find(cameras_.begin(), cameras_.end(), camera));
   }
 
@@ -120,10 +120,10 @@ class Scene {
       &point_light_sources() const {
     return point_light_sources_;
   }
-  void AddPointLightSource(std::shared_ptr<PointLightSource> source) {
+  void Add(std::shared_ptr<PointLightSource> source) {
     point_light_sources_.push_back(source);
   }
-  void RemovePointLightSource(std::shared_ptr<PointLightSource> source) {
+  void Remove(std::shared_ptr<PointLightSource> source) {
     point_light_sources_.erase(std::find(
         point_light_sources_.begin(), point_light_sources_.end(), source));
   }

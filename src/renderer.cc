@@ -4,6 +4,7 @@
 
 #include "renderer.h"
 
+#include <cmath>
 #include <cstdint>
 #include <future>
 #include <memory>
@@ -59,7 +60,13 @@ std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
   // TODO(iliazeus): a whole bunch of proper rendering
 
   // Find a closest (if any) intersection.
-  const auto isec = TraceRayThroughSceneObjects(tracer, scene, ray);
+  auto isec = TraceRayThroughSceneObjects(tracer, scene, ray);
+
+  // If an intersection is farther than max_distance, drop it.
+  const double max_distance2 = std::pow(tracer.options.max_distance, 2);
+  if (isec && length2(isec->point - ray.origin) > max_distance2) {
+    isec = {};
+  }
 
   // If no intersection found, then we hit the sky.
   if (!isec) return scene.sky_spectrum;

@@ -34,6 +34,7 @@ class RayTracer : public Renderer {
   struct Options {
     std::size_t image_width, image_height;
     double r_freq, g_freq, b_freq;
+    double max_distance = 1e6;
   };
   const Options options;
 

@@ -48,7 +48,11 @@ class GeometryObject : public SceneObject {
       transform.ApplyInverse(ray.direction)
     };
     auto result = geometry_->IntersectWithRay(object_space_ray);
-    if (result) result->material = material_;
+    if (result) {
+      result->point = transform.Apply(result->point);
+      result->normal = transform.Apply(result->normal);
+      result->material = material_;
+    }
     return result;
   }
 

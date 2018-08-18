@@ -78,6 +78,17 @@ class Camera {
   AffineTransform transform;
 };
 
+class PointLightSource {
+ public:
+  double4 position;
+  std::shared_ptr<Spectrum> spectrum;
+  double softness;
+
+  PointLightSource(double4 p, std::shared_ptr<Spectrum> spec,
+                   double soft = 0)
+      : position(p), spectrum(spec), softness(soft) {}
+};
+
 class Scene {
  public:
   std::shared_ptr<Spectrum> sky_spectrum =
@@ -105,9 +116,22 @@ class Scene {
     cameras_.erase(std::find(cameras_.begin(), cameras_.end(), camera));
   }
 
+  const std::vector<std::shared_ptr<PointLightSource>>
+      &point_light_sources() const {
+    return point_light_sources_;
+  }
+  void AddPointLightSource(std::shared_ptr<PointLightSource> source) {
+    point_light_sources_.push_back(source);
+  }
+  void RemovePointLightSource(std::shared_ptr<PointLightSource> source) {
+    point_light_sources_.erase(std::find(
+        point_light_sources_.begin(), point_light_sources_.end(), source));
+  }
+
  private:
   std::vector<std::shared_ptr<SceneObject>> objects_;
   std::vector<std::shared_ptr<Camera>> cameras_;
+  std::vector<std::shared_ptr<PointLightSource>> point_light_sources_;
 };
 
 }  // namespace deer

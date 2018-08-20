@@ -30,12 +30,16 @@ std::optional<RayIntersection> UnitSphereGeometry::IntersectWithRay(
   double4 r = ray.origin - double4{0, 0, 0, 1};
   double4 d = ray.direction;
 
+  // solving a*alpha^2 + b*alpha + c = 0
+  // where r + alpha*d is our intersection point
+
   double a = d.x()*d.x() + d.y()*d.y() + d.z()*d.z();
   double b = 2 * (r.x()*d.x() + r.y()*d.y() + r.z()*d.z());
   double c = r.x()*r.x() + r.y()*r.y() + r.z()*r.z() - 1;
 
-  // solving a*alpha^2 + b*alpha + c = 0
-  // where r + alpha*d is our intersection point
+  // we need only the positive roots
+  if (b > 0 && c > 0) return {};
+
   double discriminant = b*b - 4*a*c;
   if (discriminant < 0) return {};
   double alpha1 = (-b - std::sqrt(discriminant)) / (2 * a);

@@ -49,8 +49,8 @@ class AffineTransform {
   AffineTransform &RotateY(double angle);
   AffineTransform &RotateZ(double angle);
 
-  double4 Apply(double4 v) const;
-  double4 ApplyInverse(double4 v) const;
+  double4 Apply(double4 v) const { return matrix_ * v; }
+  double4 ApplyInverse(double4 v) const { return inv_matrix_ * v; }
 
   friend bool NearEqualForTesting(
       const AffineTransform &a, const AffineTransform &b);

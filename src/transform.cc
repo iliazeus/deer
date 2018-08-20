@@ -27,13 +27,6 @@ AffineTransform AffineTransform::FromInverseMatrix(double4x4 inv_matrix) {
   return AffineTransform(inv_matrix.inverse(), inv_matrix);
 }
 
-double4 AffineTransform::Apply(double4 v) const {
-  return matrix_ * v;
-}
-double4 AffineTransform::ApplyInverse(double4 v) const {
-  return inv_matrix_ * v;
-}
-
 AffineTransform &AffineTransform::Compose(const AffineTransform &other) {
   matrix_ = other.matrix_ * matrix_;
   inv_matrix_ = inv_matrix_ * other.inv_matrix_;

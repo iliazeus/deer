@@ -20,24 +20,15 @@ using namespace deer;
 static Scene SetUpScene() {
   Scene scene;
 
-  auto red_spectrum = std::make_shared<MonochromeSpectrum>();
-  red_spectrum->peak_wavelength = 0;
-  red_spectrum->peak_width = 0.5;
-  red_spectrum->peak_height = 255;
+  auto red_spectrum = Spectrum::MakeMonochrome(0, 0.5, 255);
   auto red_material = std::make_shared<Material>();
   red_material->diffusion_spectrum = red_spectrum;
 
-  auto green_spectrum = std::make_shared<MonochromeSpectrum>();
-  green_spectrum->peak_wavelength = 1;
-  green_spectrum->peak_width = 0.5;
-  green_spectrum->peak_height = 255;
+  auto green_spectrum = Spectrum::MakeMonochrome(1, 0.5, 255);
   auto green_material = std::make_shared<Material>();
   green_material->diffusion_spectrum = green_spectrum;
 
-  auto blue_spectrum = std::make_shared<MonochromeSpectrum>();
-  blue_spectrum->peak_wavelength = 2;
-  blue_spectrum->peak_width = 0.5;
-  blue_spectrum->peak_height = 255;
+  auto blue_spectrum = Spectrum::MakeMonochrome(2, 0.5, 255);
   auto blue_material = std::make_shared<Material>();
   blue_material->diffusion_spectrum = blue_spectrum;
 
@@ -57,17 +48,16 @@ static Scene SetUpScene() {
       AffineTransform().Translate(3, 0, 0)));
 
   auto white_material = std::make_shared<Material>();
-  white_material->diffusion_spectrum =
-      std::make_shared<ConstantSpectrum>(255);
+  white_material->diffusion_spectrum = Spectrum::MakeConstant(255);
 
   scene.Add(std::make_shared<GeometryObject>(
       std::make_shared<XYPlaneGeometry>(),
       white_material,
       AffineTransform().RotateX(std::acos(0)).Translate(0, -2, 0)));
 
-  scene.ambiance_spectrum = std::make_shared<ConstantSpectrum>(0.5);
+  scene.ambiance_spectrum = Spectrum::MakeConstant(0.5);
   scene.Add(std::make_shared<PointLightSource>(
-      double4{-3, 3, -3, 1}, std::make_shared<ConstantSpectrum>(0.5)));
+      double4{-3, 3, -3, 1}, Spectrum::MakeConstant(0.5)));
 
   return scene;
 }

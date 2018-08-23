@@ -14,7 +14,7 @@
 namespace deer {
 
 struct Material {
-  std::shared_ptr<Spectrum> diffusion_spectrum;
+  Spectrum diffusion_spectrum;
 };
 
 struct RayIntersection {
@@ -26,7 +26,7 @@ struct RayIntersection {
 struct Ray {
   double4 origin;
   double4 direction;
-  std::shared_ptr<Spectrum> spectrum = nullptr;
+  Spectrum spectrum;
 
   Ray ReflectOff(const RayIntersection &isec) const {
     return Ray{isec.point, direction.reflect_off(isec.normal), spectrum};

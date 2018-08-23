@@ -10,41 +10,38 @@
 
 namespace deer {
 
-struct Spectrum {
-  virtual double intensity(double wavelength) const = 0;
-  double operator()(double wavelength) const { return intensity(wavelength); }
-
-  virtual ~Spectrum() {}
-
-  static std::shared_ptr<Spectrum> sum(
-      std::shared_ptr<const Spectrum> a,
-      std::shared_ptr<const Spectrum> b);
-  static std::shared_ptr<Spectrum> difference(
-      std::shared_ptr<const Spectrum> a,
-      std::shared_ptr<const Spectrum> b);
-  static std::shared_ptr<Spectrum> product(
-      std::shared_ptr<const Spectrum> a,
-      std::shared_ptr<const Spectrum> b);
-};
-
-struct ConstantSpectrum : public Spectrum {
-  double value = 0;
-  double intensity(double wavelength) const override { return value; }
-
-  explicit ConstantSpectrum(double v) : value(v) {}
-};
-
-struct MonochromeSpectrum : public Spectrum {
-  double peak_wavelength = 0;
-  double peak_width = 0;
-  double peak_height = 0;
-  double intensity(double wavelength) const override {
-    if (std::abs(wavelength - peak_wavelength) <= peak_width / 2) {
-      return peak_height;
-    } else {
-      return 0;
-    }
+class Spectrum {
+ public:
+  virtual double intensity(double wavelength) const {
+    return pimpl_->intensity(wavelength);
   }
+  double operator()(double wavelength) const {
+    return intensity(wavelength);
+  }
+
+  Spectrum() : pimpl_(nullptr) {}
+  virtual ~Spectrum() = default;
+
+  operator bool() const { return bool{pimpl_}; }
+  bool operator!() const { return !pimpl_; }
+
+  static Spectrum MakeConstant(double value);
+  static Spectrum MakeMonochrome(double wavelength,
+      double width, double value);
+
+  friend Spectrum operator+(const Spectrum &, const Spectrum &);
+  friend Spectrum operator-(const Spectrum &, const Spectrum &);
+  friend Spectrum operator*(const Spectrum &, const Spectrum &);
+
+  Spectrum &operator+=(const Spectrum &other) { return *this = *this + other; }
+  Spectrum &operator-=(const Spectrum &other) { return *this = *this - other; }
+  Spectrum &operator*=(const Spectrum &other) { return *this = *this * other; }
+
+ protected:
+  explicit Spectrum(std::shared_ptr<Spectrum> pimpl) : pimpl_(pimpl) {}
+
+ private:
+  std::shared_ptr<Spectrum> pimpl_;
 };
 
 }  // namespace deer

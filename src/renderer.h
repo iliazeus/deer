@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "scene.h"
-#include "spectrum.h"
 
 namespace deer {
 

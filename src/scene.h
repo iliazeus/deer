@@ -12,6 +12,7 @@
 
 #include "geometry.h"
 #include "optics.h"
+#include "spectrum.h"
 #include "transform.h"
 
 namespace deer {
@@ -81,20 +82,17 @@ class Camera {
 class PointLightSource {
  public:
   double4 position;
-  std::shared_ptr<Spectrum> spectrum;
+  Spectrum spectrum;
   double softness;
 
-  PointLightSource(double4 p, std::shared_ptr<Spectrum> spec,
-                   double soft = 0)
+  PointLightSource(double4 p, Spectrum spec, double soft = 0)
       : position(p), spectrum(spec), softness(soft) {}
 };
 
 class Scene {
  public:
-  std::shared_ptr<Spectrum> sky_spectrum =
-      std::make_shared<ConstantSpectrum>(0);
-  std::shared_ptr<Spectrum> ambiance_spectrum =
-      std::make_shared<ConstantSpectrum>(1);
+  Spectrum sky_spectrum = Spectrum::MakeConstant(0);
+  Spectrum ambiance_spectrum = Spectrum::MakeConstant(1);
 
   const std::vector<std::shared_ptr<SceneObject>> &objects() const {
     return objects_;

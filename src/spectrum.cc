@@ -11,41 +11,67 @@ namespace deer {
 
 namespace {
 
-struct LazyCompositeSpectrum : public Spectrum {
-  std::function<double(double, double)> func;
-  std::shared_ptr<const Spectrum> left, right;
+struct ConstantSpectrum : public Spectrum {
+  double value = 0;
+  double intensity(double wavelength) const override { return value; }
+};
 
-  LazyCompositeSpectrum(std::function<double(double, double)> f,
-      std::shared_ptr<const Spectrum> l,
-      std::shared_ptr<const Spectrum> r)
-      : func(f), left(l), right(r) {}
-
+struct MonochromeSpectrum : public Spectrum {
+  double peak_wavelength = 0;
+  double peak_width = 0;
+  double peak_height = 0;
   double intensity(double wavelength) const override {
-    return func(left->intensity(wavelength), right->intensity(wavelength));
+    if (std::abs(wavelength - peak_wavelength) <= peak_width / 2) {
+      return peak_height;
+    } else {
+      return 0;
+    }
+  }
+};
+
+template<class Op>
+struct BinaryOperatorSpectrum : public Spectrum {
+  Spectrum left, right;
+  double intensity(double wavelength) const override {
+    return Op()(left(wavelength), right(wavelength));
   }
 };
 
 }  // namespace
 
-std::shared_ptr<Spectrum> Spectrum::sum(
-    std::shared_ptr<const Spectrum> a,
-    std::shared_ptr<const Spectrum> b) {
-  return std::make_shared<LazyCompositeSpectrum>(
-      std::plus<double>(), a, b);
+Spectrum Spectrum::MakeConstant(double value) {
+  ConstantSpectrum impl;
+  impl.value = value;
+  return Spectrum(std::make_shared<decltype(impl)>(impl));
 }
 
-std::shared_ptr<Spectrum> Spectrum::difference(
-    std::shared_ptr<const Spectrum> a,
-    std::shared_ptr<const Spectrum> b) {
-  return std::make_shared<LazyCompositeSpectrum>(
-      std::minus<double>(), a, b);
+Spectrum Spectrum::MakeMonochrome(double wl, double width, double height) {
+  MonochromeSpectrum impl;
+  impl.peak_wavelength = wl;
+  impl.peak_width = width;
+  impl.peak_height = height;
+  return Spectrum(std::make_shared<decltype(impl)>(impl));
 }
 
-std::shared_ptr<Spectrum> Spectrum::product(
-    std::shared_ptr<const Spectrum> a,
-    std::shared_ptr<const Spectrum> b) {
-  return std::make_shared<LazyCompositeSpectrum>(
-      std::multiplies<double>(), a, b);
+Spectrum operator+(const Spectrum &a, const Spectrum &b) {
+  BinaryOperatorSpectrum<std::plus<double>> impl;
+  impl.left = a;
+  impl.right = b;
+  return Spectrum(std::make_shared<decltype(impl)>(impl));
+}
+
+Spectrum operator-(const Spectrum &a, const Spectrum &b) {
+  BinaryOperatorSpectrum<std::minus<double>> impl;
+  impl.left = a;
+  impl.right = b;
+  return Spectrum(std::make_shared<decltype(impl)>(impl));
+}
+
+Spectrum operator*(const Spectrum &a, const Spectrum &b) {
+  BinaryOperatorSpectrum<std::multiplies<double>> impl;
+  impl.left = a;
+  impl.right = b;
+  return Spectrum(std::make_shared<decltype(impl)>(impl));
 }
 
 }  // namespace deer

@@ -54,9 +54,9 @@ std::optional<RayIntersection> TraceRayThroughSceneObjects(
   return isec;
 }
 
-std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
-                                   const Scene &scene,
-                                   const Ray &ray) {
+Spectrum TraceRay(const RayTracer &tracer,
+                  const Scene &scene,
+                  const Ray &ray) {
   // TODO(iliazeus): a whole bunch of proper rendering
 
   // Find a closest (if any) intersection.
@@ -86,11 +86,11 @@ std::shared_ptr<Spectrum> TraceRay(const RayTracer &tracer,
         continue;
       }
     }
-    lighting_spectrum = Spectrum::sum(lighting_spectrum, source->spectrum);
+    lighting_spectrum += source->spectrum;
   }
 
-  const auto result_spectrum = Spectrum::product(
-      isec->material->diffusion_spectrum, lighting_spectrum);
+  const auto result_spectrum =
+      isec->material->diffusion_spectrum * lighting_spectrum;
 
   return result_spectrum;
 }
@@ -104,7 +104,7 @@ void RenderPixels(const RayTracer &tracer,
 
   std::vector<std::uint8_t> result;
   result.reserve(tracer.options.image_width * tracer.options.image_height);
-  std::queue<std::future<std::shared_ptr<Spectrum>>> queue;
+  std::queue<std::future<Spectrum>> queue;
 
   for (std::size_t row = 0; row < tracer.options.image_height; row++) {
     for (std::size_t col = 0; col < tracer.options.image_width; col++) {
@@ -112,9 +112,9 @@ void RenderPixels(const RayTracer &tracer,
         queue.front().wait();
         auto spectrum = queue.front().get();
         queue.pop();
-        result.push_back(spectrum->intensity(tracer.options.r_wavelength));
-        result.push_back(spectrum->intensity(tracer.options.g_wavelength));
-        result.push_back(spectrum->intensity(tracer.options.b_wavelength));
+        result.push_back(spectrum(tracer.options.r_wavelength));
+        result.push_back(spectrum(tracer.options.g_wavelength));
+        result.push_back(spectrum(tracer.options.b_wavelength));
       }
 
       Ray ray = RayThroughPixel(tracer, camera, row, col);
@@ -128,9 +128,9 @@ void RenderPixels(const RayTracer &tracer,
     queue.front().wait();
     auto spectrum = queue.front().get();
     queue.pop();
-    result.push_back(spectrum->intensity(tracer.options.r_wavelength));
-    result.push_back(spectrum->intensity(tracer.options.g_wavelength));
-    result.push_back(spectrum->intensity(tracer.options.b_wavelength));
+    result.push_back(spectrum(tracer.options.r_wavelength));
+    result.push_back(spectrum(tracer.options.g_wavelength));
+    result.push_back(spectrum(tracer.options.b_wavelength));
   }
 
   result_promise.set_value(std::move(result));

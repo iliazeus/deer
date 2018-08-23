@@ -9,6 +9,8 @@
 
 #include <gtest/gtest.h>
 
+#include "../src/spectrum.h"
+
 namespace deer {
 
 namespace test {
@@ -27,7 +29,7 @@ TEST_F(SceneTest, StroresThings) {
   auto camera = std::make_shared<Camera>();
   scene.Add(camera);
   auto point_light_source = std::make_shared<PointLightSource>(
-      double4::zero(), nullptr);
+      double4::zero(), Spectrum::MakeConstant(0));
   scene.Add(point_light_source);
 
   EXPECT_EQ(scene.objects().size(), 1u);

@@ -21,21 +21,21 @@ static Scene SetUpScene() {
   Scene scene;
 
   auto red_spectrum = std::make_shared<MonochromeSpectrum>();
-  red_spectrum->peak_freq = 0;
+  red_spectrum->peak_wavelength = 0;
   red_spectrum->peak_width = 0.5;
   red_spectrum->peak_height = 255;
   auto red_material = std::make_shared<Material>();
   red_material->diffusion_spectrum = red_spectrum;
 
   auto green_spectrum = std::make_shared<MonochromeSpectrum>();
-  green_spectrum->peak_freq = 1;
+  green_spectrum->peak_wavelength = 1;
   green_spectrum->peak_width = 0.5;
   green_spectrum->peak_height = 255;
   auto green_material = std::make_shared<Material>();
   green_material->diffusion_spectrum = green_spectrum;
 
   auto blue_spectrum = std::make_shared<MonochromeSpectrum>();
-  blue_spectrum->peak_freq = 2;
+  blue_spectrum->peak_wavelength = 2;
   blue_spectrum->peak_width = 0.5;
   blue_spectrum->peak_height = 255;
   auto blue_material = std::make_shared<Material>();
@@ -82,9 +82,9 @@ static RayTracer SetUpRayTracer() {
   RayTracer::Options options;
   options.image_width = 640;
   options.image_height = 360;
-  options.r_freq = 0;
-  options.g_freq = 1;
-  options.b_freq = 2;
+  options.r_wavelength = 0;
+  options.g_wavelength = 1;
+  options.b_wavelength = 2;
   return RayTracer(options);
 }
 

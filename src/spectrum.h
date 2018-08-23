@@ -11,8 +11,8 @@
 namespace deer {
 
 struct Spectrum {
-  virtual double intensity(double frequency) const = 0;
-  double operator()(double freq) const { return intensity(freq); }
+  virtual double intensity(double wavelength) const = 0;
+  double operator()(double wavelength) const { return intensity(wavelength); }
 
   virtual ~Spectrum() {}
 
@@ -29,17 +29,21 @@ struct Spectrum {
 
 struct ConstantSpectrum : public Spectrum {
   double value = 0;
-  double intensity(double freq) const override { return value; }
+  double intensity(double wavelength) const override { return value; }
 
   explicit ConstantSpectrum(double v) : value(v) {}
 };
 
 struct MonochromeSpectrum : public Spectrum {
-  double peak_freq = 0;
+  double peak_wavelength = 0;
   double peak_width = 0;
   double peak_height = 0;
-  double intensity(double freq) const override {
-    return std::abs(freq - peak_freq) <= peak_width / 2 ? peak_height : 0;
+  double intensity(double wavelength) const override {
+    if (std::abs(wavelength - peak_wavelength) <= peak_width / 2) {
+      return peak_height;
+    } else {
+      return 0;
+    }
   }
 };
 

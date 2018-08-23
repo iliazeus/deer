@@ -19,13 +19,13 @@ TEST_F(SpectrumTest, DoesArithmetic) {
 
   // [8; 12] -> 1
   auto mono_sp1 = std::make_shared<MonochromeSpectrum>();
-  mono_sp1->peak_freq = 10;
+  mono_sp1->peak_wavelength = 10;
   mono_sp1->peak_width = 4;
   mono_sp1->peak_height = 3;
 
   // [9; 13] -> 2
   auto mono_sp2 = std::make_shared<MonochromeSpectrum>();
-  mono_sp2->peak_freq = 11;
+  mono_sp2->peak_wavelength = 11;
   mono_sp2->peak_width = 4;
   mono_sp2->peak_height = 2;
 

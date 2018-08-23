@@ -20,8 +20,8 @@ struct LazyCompositeSpectrum : public Spectrum {
       std::shared_ptr<const Spectrum> r)
       : func(f), left(l), right(r) {}
 
-  double intensity(double freq) const override {
-    return func(left->intensity(freq), right->intensity(freq));
+  double intensity(double wavelength) const override {
+    return func(left->intensity(wavelength), right->intensity(wavelength));
   }
 };
 

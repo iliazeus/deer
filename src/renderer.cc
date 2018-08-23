@@ -112,9 +112,9 @@ void RenderPixels(const RayTracer &tracer,
         queue.front().wait();
         auto spectrum = queue.front().get();
         queue.pop();
-        result.push_back(spectrum->intensity(tracer.options.r_freq));
-        result.push_back(spectrum->intensity(tracer.options.g_freq));
-        result.push_back(spectrum->intensity(tracer.options.b_freq));
+        result.push_back(spectrum->intensity(tracer.options.r_wavelength));
+        result.push_back(spectrum->intensity(tracer.options.g_wavelength));
+        result.push_back(spectrum->intensity(tracer.options.b_wavelength));
       }
 
       Ray ray = RayThroughPixel(tracer, camera, row, col);
@@ -128,9 +128,9 @@ void RenderPixels(const RayTracer &tracer,
     queue.front().wait();
     auto spectrum = queue.front().get();
     queue.pop();
-    result.push_back(spectrum->intensity(tracer.options.r_freq));
-    result.push_back(spectrum->intensity(tracer.options.g_freq));
-    result.push_back(spectrum->intensity(tracer.options.b_freq));
+    result.push_back(spectrum->intensity(tracer.options.r_wavelength));
+    result.push_back(spectrum->intensity(tracer.options.g_wavelength));
+    result.push_back(spectrum->intensity(tracer.options.b_wavelength));
   }
 
   result_promise.set_value(std::move(result));

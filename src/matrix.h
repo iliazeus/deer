@@ -5,8 +5,9 @@
 #ifndef DEER_MATRIX_H_
 #define DEER_MATRIX_H_
 
-#include <cstdint>
+#include <algorithm>
 #include <array>
+#include <cstdint>
 #include <exception>
 #include <type_traits>
 
@@ -234,7 +235,7 @@ T Matrix<T, N>::trace() const {
 template<class T, std::size_t N>
 T det(const Matrix<T, N> &m) {
   throw std::logic_error("det() is currently only implemented"
-      "for matrix sizes up to 3");
+      "for matrix sizes up to 4");
 }
 
 template<class T>
@@ -255,6 +256,20 @@ T det(const Matrix<T, 3> &m) {
        - m[2][0] * m[1][1] * m[0][2];
 }
 
+template<class T>
+T det(const Matrix<T, 4> &m) {
+  T result = 0;
+  std::array<std::size_t, 4> perm{0, 1, 2, 3};
+  std::size_t k = 1;  // parity of (k/2) == parity of the 4-permutation
+  do {
+    T product = (k/2) % 2 ? -1 : 1;
+    for (std::size_t i = 0; i < 4; i++) product *= m[i][perm[i]];
+    result += product;
+    k++;
+  } while (std::next_permutation(perm.begin(), perm.end()));
+  return result;
+}
+
 template<class T, std::size_t N>
 T Matrix<T, N>::det() const {
   return deer::det(*this);
@@ -263,7 +278,7 @@ T Matrix<T, N>::det() const {
 template<class T, std::size_t N>
 Matrix<T, N> inverse(const Matrix<T, N> &m) {
   throw std::logic_error("inverse() is currently only implemented"
-      "for matrix sizes up to 3");
+      "for matrix sizes up to 4");
 }
 
 template<class T>
@@ -282,7 +297,7 @@ struct Matrix<T, 2> inverse(const Matrix<T, 2> &m) {
 // TODO(iliazeus): research into efficient matrix inversion methods
 template<class T>
 Matrix<T, 3> inverse(const Matrix<T, 3> &m) {
-  // Cayley-Hamilton decomposition
+  // Cayley-Hamilton method
   T trace_m = trace(m);
   Matrix<T, 3> m2 = m * m;
   T trace_m2 = trace(m2);
@@ -290,12 +305,26 @@ Matrix<T, 3> inverse(const Matrix<T, 3> &m) {
       - m * trace_m + m2) / det(m);
 }
 
+template<class T>
+Matrix<T, 4> inverse(const Matrix<T, 4> &m) {
+  // Cayley-Hamilton method
+  const auto m2 = m * m;
+  const auto m3 = m2 * m;
+  const auto trace_m = trace(m);
+  const auto trace_m2 = trace(m2);
+  const auto trace_m3 = trace(m3);
+  return (
+      (trace_m*trace_m*trace_m - 3*trace_m*trace_m2 + 2*trace_m3)
+          * Matrix<T, 4>::id() / 6
+      - (trace_m*trace_m - trace_m2) * m / 2
+      + trace_m * m2 - m3)
+      / det(m);
+}
+
 template<class T, std::size_t N>
 Matrix<T, N> Matrix<T, N>::inverse() const {
   return deer::inverse(*this);
 }
-
-// TODO(iliazeus): det() and inverse() for matrices of size 4
 
 using int2x2 = Matrix<int, 2>;
 using int3x3 = Matrix<int, 3>;

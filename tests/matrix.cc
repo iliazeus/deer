@@ -127,6 +127,33 @@ TEST_F(MatrixTest, Test3x3) {
   EXPECT_EQ(ab.det(), a.det() * b.det());
 }
 
+TEST_F(MatrixTest, Test4x4) {
+  double4x4 a = {
+    double4{1, 2, 4, 8},
+    double4{0, 2, 0, 0},
+    double4{0, 0, 4, 0},
+    double4{0, 0, 0, 8}
+  };
+  double4x4 b = {
+    double4{1, 1, 1, 0},
+    double4{1, 1, 0, 1},
+    double4{1, 0, 1, 1},
+    double4{0, 1, 1, 1}
+  };
+  double4x4 ab = a * b;
+  double4x4 ba = b * a;
+
+  bool (&near_equal)(const double4x4 &, const double4x4 &)
+      = NearEqualForTesting;
+
+  EXPECT_TRUE(near_equal(ab * inverse(b), a));
+  EXPECT_TRUE(near_equal(ab.inverse(), b.inverse() * a.inverse()));
+  EXPECT_EQ(double4x4::id().inverse(), double4x4::id());
+
+  EXPECT_EQ(ab.det(), ba.det());
+  EXPECT_EQ(ab.det(), a.det() * b.det());
+}
+
 }  // namespace test
 
 }  // namespace deer

@@ -281,6 +281,7 @@ bool NearEqualForTesting(
     const Vector<T, N> &a, const Vector<T, N> &b) {
   const double EPS = 1e-6;
   for (std::size_t i = 0; i < N; i++) {
+    if (std::isnan(a[i]) || std::isnan(b[i])) return false;
     if (std::abs(a[i] - b[i]) > EPS) return false;
   }
   return true;

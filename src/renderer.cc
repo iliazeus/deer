@@ -4,14 +4,15 @@
 
 #include "renderer.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <future>
 #include <memory>
 #include <optional>
 #include <queue>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "optics.h"
 #include "spectrum.h"
@@ -72,7 +73,9 @@ Spectrum TraceRay(const RayTracer &tracer,
   if (!isec) return scene.sky_spectrum;
 
   const double kLightingEps = 1e-6;
-  auto lighting_spectrum = scene.ambiance_spectrum;
+  auto ambient_lighting_spectrum = scene.ambiance_spectrum;
+  auto diffuse_lighting_spectrum = Spectrum::MakeConstant(0);
+  auto specular_lighting_spectrum = Spectrum::MakeConstant(0);
 
   // Check if each of the point light sources is reachable, modifying
   // the total lighting_spectrum.
@@ -80,17 +83,28 @@ Spectrum TraceRay(const RayTracer &tracer,
     const double4 ray_origin = isec->point + kLightingEps * isec->normal;
     const double4 ray_direction = source->position - ray_origin;
     const Ray ray{ray_origin, ray_direction};
+
+    // Cast shadows
     const auto light_isec = TraceRayThroughSceneObjects(tracer, scene, ray);
     if (light_isec) {
       if (length2(light_isec->point - ray_origin) < length2(ray_direction)) {
         continue;
       }
     }
-    lighting_spectrum += source->spectrum;
+
+    // Phong reflection model
+    const double4 nn = isec->normal / length(isec->normal);
+    const double4 nl = ray_direction / length(ray_direction);
+    const double4 nr = -nl.reflect_off(nn);
+    diffuse_lighting_spectrum += source->spectrum * dot(nn, nl);
+    specular_lighting_spectrum += source->spectrum *
+        std::pow(dot(nn, nr), isec->material->shininess);
   }
 
   const auto result_spectrum =
-      isec->material->diffusion_spectrum * lighting_spectrum;
+      isec->material->ambiance_spectrum * ambient_lighting_spectrum +
+      isec->material->diffusion_spectrum * diffuse_lighting_spectrum +
+      isec->material->specular_spectrum * specular_lighting_spectrum;
 
   return result_spectrum;
 }
@@ -112,9 +126,12 @@ void RenderPixels(const RayTracer &tracer,
         queue.front().wait();
         auto spectrum = queue.front().get();
         queue.pop();
-        result.push_back(spectrum(tracer.options.r_wavelength));
-        result.push_back(spectrum(tracer.options.g_wavelength));
-        result.push_back(spectrum(tracer.options.b_wavelength));
+        result.push_back(
+            std::clamp(spectrum(tracer.options.r_wavelength), 0.0, 255.0));
+        result.push_back(
+            std::clamp(spectrum(tracer.options.g_wavelength), 0.0, 255.0));
+        result.push_back(
+            std::clamp(spectrum(tracer.options.b_wavelength), 0.0, 255.0));
       }
 
       Ray ray = RayThroughPixel(tracer, camera, row, col);
@@ -128,9 +145,12 @@ void RenderPixels(const RayTracer &tracer,
     queue.front().wait();
     auto spectrum = queue.front().get();
     queue.pop();
-    result.push_back(spectrum(tracer.options.r_wavelength));
-    result.push_back(spectrum(tracer.options.g_wavelength));
-    result.push_back(spectrum(tracer.options.b_wavelength));
+    result.push_back(
+        std::clamp(spectrum(tracer.options.r_wavelength), 0.0, 255.0));
+    result.push_back(
+        std::clamp(spectrum(tracer.options.g_wavelength), 0.0, 255.0));
+    result.push_back(
+        std::clamp(spectrum(tracer.options.b_wavelength), 0.0, 255.0));
   }
 
   result_promise.set_value(std::move(result));

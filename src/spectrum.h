@@ -37,6 +37,12 @@ class Spectrum {
   Spectrum &operator-=(const Spectrum &other) { return *this = *this - other; }
   Spectrum &operator*=(const Spectrum &other) { return *this = *this * other; }
 
+  friend Spectrum operator*(const Spectrum &, const double &);
+  friend Spectrum operator*(const double &d, const Spectrum &sp) {
+    return sp * d;
+  }
+  Spectrum &operator*=(const double &d) { return *this = *this * d; }
+
  protected:
   explicit Spectrum(std::shared_ptr<Spectrum> pimpl) : pimpl_(pimpl) {}
 

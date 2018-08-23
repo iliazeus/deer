@@ -37,6 +37,14 @@ struct BinaryOperatorSpectrum : public Spectrum {
   }
 };
 
+struct MultipliedSpectrum : public Spectrum {
+  Spectrum spectrum;
+  double times;
+  double intensity(double wavelength) const override {
+    return spectrum(wavelength) * times;
+  }
+};
+
 }  // namespace
 
 Spectrum Spectrum::MakeConstant(double value) {
@@ -71,6 +79,13 @@ Spectrum operator*(const Spectrum &a, const Spectrum &b) {
   BinaryOperatorSpectrum<std::multiplies<double>> impl;
   impl.left = a;
   impl.right = b;
+  return Spectrum(std::make_shared<decltype(impl)>(impl));
+}
+
+Spectrum operator*(const Spectrum &sp, const double &d) {
+  MultipliedSpectrum impl;
+  impl.spectrum = sp;
+  impl.times = d;
   return Spectrum(std::make_shared<decltype(impl)>(impl));
 }
 

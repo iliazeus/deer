@@ -14,7 +14,10 @@
 namespace deer {
 
 struct Material {
+  Spectrum ambiance_spectrum;
   Spectrum diffusion_spectrum;
+  Spectrum specular_spectrum;
+  double shininess;
 };
 
 struct RayIntersection {

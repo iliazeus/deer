@@ -20,17 +20,28 @@ using namespace deer;
 static Scene SetUpScene() {
   Scene scene;
 
+  auto white_spectrum = Spectrum::MakeConstant(255);
   auto red_spectrum = Spectrum::MakeMonochrome(0, 0.5, 255);
-  auto red_material = std::make_shared<Material>();
-  red_material->diffusion_spectrum = red_spectrum;
-
   auto green_spectrum = Spectrum::MakeMonochrome(1, 0.5, 255);
-  auto green_material = std::make_shared<Material>();
-  green_material->diffusion_spectrum = green_spectrum;
-
   auto blue_spectrum = Spectrum::MakeMonochrome(2, 0.5, 255);
+
+  auto red_material = std::make_shared<Material>();
+  red_material->ambiance_spectrum = red_spectrum;
+  red_material->diffusion_spectrum = red_spectrum;
+  red_material->specular_spectrum = white_spectrum;
+  red_material->shininess = 5;
+
+  auto green_material = std::make_shared<Material>();
+  green_material->ambiance_spectrum = green_spectrum;
+  green_material->diffusion_spectrum = green_spectrum;
+  green_material->specular_spectrum = white_spectrum;
+  green_material->shininess = 5;
+
   auto blue_material = std::make_shared<Material>();
+  blue_material->ambiance_spectrum = blue_spectrum;
   blue_material->diffusion_spectrum = blue_spectrum;
+  blue_material->specular_spectrum = white_spectrum;
+  blue_material->shininess = 5;
 
   auto sphere_geometry = std::make_shared<UnitSphereGeometry>();
 
@@ -48,14 +59,17 @@ static Scene SetUpScene() {
       AffineTransform().Translate(3, 0, 0)));
 
   auto white_material = std::make_shared<Material>();
-  white_material->diffusion_spectrum = Spectrum::MakeConstant(255);
+  white_material->ambiance_spectrum = white_spectrum;
+  white_material->diffusion_spectrum = white_spectrum;
+  white_material->specular_spectrum = Spectrum::MakeConstant(0);
+  white_material->shininess = 0;
 
   scene.Add(std::make_shared<GeometryObject>(
       std::make_shared<XYPlaneGeometry>(),
       white_material,
       AffineTransform().RotateX(std::acos(0)).Translate(0, -2, 0)));
 
-  scene.ambiance_spectrum = Spectrum::MakeConstant(0.5);
+  scene.ambiance_spectrum = Spectrum::MakeConstant(0.2);
   scene.Add(std::make_shared<PointLightSource>(
       double4{-3, 3, -3, 1}, Spectrum::MakeConstant(0.5)));
 

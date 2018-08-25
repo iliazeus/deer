@@ -39,29 +39,13 @@ Ray RayThroughPixel(const RayTracer &tracer,
   return Ray{camera.position(), direction};
 }
 
-std::optional<RayIntersection> TraceRayThroughSceneObjects(
-    const RayTracer &tracer, const Scene &scene, const Ray &ray) {
-  std::optional<RayIntersection> isec = {};
-  double len2;
-  for (const auto &object : scene.objects()) {
-    auto current_isec = object->IntersectWithRay(ray);
-    if (!current_isec) continue;
-    double current_len2 = length2(current_isec->point - ray.origin);
-    if (!isec || current_len2 < len2) {
-      isec = current_isec;
-      len2 = current_len2;
-    }
-  }
-  return isec;
-}
-
 Spectrum TraceRay(const RayTracer &tracer,
                   const Scene &scene,
                   const Ray &ray) {
   // TODO(iliazeus): a whole bunch of proper rendering
 
   // Find a closest (if any) intersection.
-  auto isec = TraceRayThroughSceneObjects(tracer, scene, ray);
+  auto isec = scene.TraceRay(ray);
 
   // If an intersection is farther than max_distance, drop it.
   const double max_distance2 = std::pow(tracer.options.max_distance, 2);
@@ -85,7 +69,7 @@ Spectrum TraceRay(const RayTracer &tracer,
     const Ray ray{ray_origin, ray_direction};
 
     // Cast shadows
-    const auto light_isec = TraceRayThroughSceneObjects(tracer, scene, ray);
+    const auto light_isec = scene.TraceRay(ray);
     if (light_isec) {
       if (length2(light_isec->point - ray_origin) < length2(ray_direction)) {
         continue;

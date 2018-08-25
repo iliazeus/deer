@@ -94,6 +94,8 @@ class Scene {
   Spectrum sky_spectrum = Spectrum::MakeConstant(0);
   Spectrum ambiance_spectrum = Spectrum::MakeConstant(1);
 
+  std::optional<RayIntersection> TraceRay(const Ray &ray) const;
+
   const std::vector<std::shared_ptr<SceneObject>> &objects() const {
     return objects_;
   }

@@ -8,6 +8,8 @@
 #include <cmath>
 #include <memory>
 
+#include "vector.h"
+
 namespace deer {
 
 class Spectrum {
@@ -17,6 +19,13 @@ class Spectrum {
   }
   double operator()(double wavelength) const {
     return intensity(wavelength);
+  }
+  double3 operator()(double3 wavelengths) const {
+    return double3{
+      intensity(wavelengths.r()),
+      intensity(wavelengths.g()),
+      intensity(wavelengths.b())
+    };
   }
 
   Spectrum() : pimpl_(nullptr) {}

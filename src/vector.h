@@ -5,6 +5,7 @@
 #ifndef DEER_VECTOR_H_
 #define DEER_VECTOR_H_
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -224,6 +225,14 @@ struct Vector {
     return *this - 2 * this->project_onto(normal);
   }
 
+  Vector clamp(const Vector &min, const Vector &max) const {
+    Vector result;
+    for (std::size_t i = 0; i < N; i++) {
+      result[i] = std::clamp(elements_[i], min[i], max[i]);
+    }
+    return result;
+  }
+
   // TODO(iliazeus): refraction
 
   static Vector zero() {
@@ -275,6 +284,10 @@ using float4 = Vector<float, 4>;
 using double2 = Vector<double, 2>;
 using double3 = Vector<double, 3>;
 using double4 = Vector<double, 4>;
+
+using byte2 = Vector<std::uint8_t, 2>;
+using byte3 = Vector<std::uint8_t, 3>;
+using byte4 = Vector<std::uint8_t, 4>;
 
 template<class T, std::size_t N>
 bool NearEqualForTesting(

@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "rgb.h"
 #include "scene.h"
 
 namespace deer {
@@ -32,7 +33,7 @@ class RayTracer : public Renderer {
  public:
   struct Options {
     std::size_t image_width, image_height;
-    double r_wavelength, g_wavelength, b_wavelength;
+    RgbColorProfile color_profile;
     double max_distance = 1e6;
   };
   const Options options;

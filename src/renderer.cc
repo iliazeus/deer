@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "optics.h"
+#include "rgb.h"
 #include "spectrum.h"
 #include "scene.h"
 #include "transform.h"
@@ -110,12 +111,8 @@ void RenderPixels(const RayTracer &tracer,
         queue.front().wait();
         auto spectrum = queue.front().get();
         queue.pop();
-        result.push_back(
-            std::clamp(spectrum(tracer.options.r_wavelength), 0.0, 255.0));
-        result.push_back(
-            std::clamp(spectrum(tracer.options.g_wavelength), 0.0, 255.0));
-        result.push_back(
-            std::clamp(spectrum(tracer.options.b_wavelength), 0.0, 255.0));
+        auto rgb_bytes = tracer.options.color_profile.ToRgbBytes(spectrum);
+        result.insert(result.end(), rgb_bytes.begin(), rgb_bytes.end());
       }
 
       Ray ray = RayThroughPixel(tracer, camera, row, col);
@@ -129,12 +126,8 @@ void RenderPixels(const RayTracer &tracer,
     queue.front().wait();
     auto spectrum = queue.front().get();
     queue.pop();
-    result.push_back(
-        std::clamp(spectrum(tracer.options.r_wavelength), 0.0, 255.0));
-    result.push_back(
-        std::clamp(spectrum(tracer.options.g_wavelength), 0.0, 255.0));
-    result.push_back(
-        std::clamp(spectrum(tracer.options.b_wavelength), 0.0, 255.0));
+    auto rgb_bytes = tracer.options.color_profile.ToRgbBytes(spectrum);
+    result.insert(result.end(), rgb_bytes.begin(), rgb_bytes.end());
   }
 
   result_promise.set_value(std::move(result));

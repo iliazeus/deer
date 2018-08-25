@@ -11,19 +11,28 @@
 #include "geometry.h"
 #include "optics.h"
 #include "renderer.h"
+#include "rgb.h"
 #include "scene.h"
 #include "spectrum.h"
 #include "transform.h"
 
 using namespace deer;
 
+static RgbColorProfile SetUpColorProfile() {
+  RgbColorProfile profile;
+  profile.wavelengths = double3{2, 1, 0};
+  profile.min_intensities = double3{0, 0, 0};
+  profile.max_intensities = double3{1, 1, 1};
+  return profile;
+}
+
 static Scene SetUpScene() {
   Scene scene;
 
-  auto white_spectrum = Spectrum::MakeConstant(255);
-  auto red_spectrum = Spectrum::MakeMonochrome(0, 0.5, 255);
-  auto green_spectrum = Spectrum::MakeMonochrome(1, 0.5, 255);
-  auto blue_spectrum = Spectrum::MakeMonochrome(2, 0.5, 255);
+  auto white_spectrum = Spectrum::MakeConstant(1);
+  auto red_spectrum = Spectrum::MakeMonochrome(2, 0.5, 1);
+  auto green_spectrum = Spectrum::MakeMonochrome(1, 0.5, 1);
+  auto blue_spectrum = Spectrum::MakeMonochrome(0, 0.5, 1);
 
   auto red_material = std::make_shared<Material>();
   red_material->ambiance_spectrum = red_spectrum;
@@ -86,9 +95,7 @@ static RayTracer SetUpRayTracer() {
   RayTracer::Options options;
   options.image_width = 640;
   options.image_height = 360;
-  options.r_wavelength = 0;
-  options.g_wavelength = 1;
-  options.b_wavelength = 2;
+  options.color_profile = SetUpColorProfile();
   return RayTracer(options);
 }
 

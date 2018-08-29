@@ -2,10 +2,12 @@
 // This file is distributed under the MIT license.
 // See the LICENSE.txt file for details.
 
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "file_formats/tga.h"
 #include "geometry.h"
@@ -24,6 +26,20 @@ static RgbColorProfile SetUpColorProfile() {
   profile.min_intensities = double3{0, 0, 0};
   profile.max_intensities = double3{1, 1, 1};
   return profile;
+}
+
+static std::shared_ptr<Geometry> MakePyramid(int n_vert = 8) {
+  std::vector<std::array<double4, 3>> triangles;
+  const double PI = std::acos(-1);
+  double4 peak{0, 1, 0, 1};
+  for (int i = 0; i < n_vert; i++) {
+    double alpha1 = PI*2 * i / n_vert;
+    double alpha2 = PI*2 * (i+1) / n_vert;
+    double4 a1 = double4{std::cos(alpha1), 0, std::sin(alpha1), 1};
+    double4 a2 = double4{std::cos(alpha2), 0, std::sin(alpha2), 1};
+    triangles.push_back({peak, a1, a2});
+  }
+  return std::make_shared<TrianglesGeometry>(std::move(triangles));
 }
 
 static Scene SetUpScene() {
@@ -52,7 +68,14 @@ static Scene SetUpScene() {
   blue_material->specular_spectrum = white_spectrum;
   blue_material->shininess = 5;
 
+  auto white_material = std::make_shared<Material>();
+  white_material->ambiance_spectrum = white_spectrum;
+  white_material->diffusion_spectrum = white_spectrum;
+  white_material->specular_spectrum = Spectrum::MakeConstant(0);
+  white_material->shininess = 0;
+
   auto sphere_geometry = std::make_shared<UnitSphereGeometry>();
+  auto pyramid_geometry = MakePyramid();
 
   scene.Add(std::make_shared<GeometryObject>(
       sphere_geometry,
@@ -67,11 +90,10 @@ static Scene SetUpScene() {
       blue_material,
       AffineTransform().Translate(3, 0, 0)));
 
-  auto white_material = std::make_shared<Material>();
-  white_material->ambiance_spectrum = white_spectrum;
-  white_material->diffusion_spectrum = white_spectrum;
-  white_material->specular_spectrum = Spectrum::MakeConstant(0);
-  white_material->shininess = 0;
+  scene.Add(std::make_shared<GeometryObject>(
+      pyramid_geometry,
+      white_material,
+      AffineTransform().Scale(1.5, 4, 1.5).Translate(-1.5, -2, -1)));
 
   scene.Add(std::make_shared<GeometryObject>(
       std::make_shared<XYPlaneGeometry>(),
@@ -80,14 +102,16 @@ static Scene SetUpScene() {
 
   scene.ambiance_spectrum = Spectrum::MakeConstant(0.2);
   scene.Add(std::make_shared<PointLightSource>(
-      double4{-3, 3, -3, 1}, Spectrum::MakeConstant(0.5)));
+      double4{-5, 3, -5, 1}, Spectrum::MakeConstant(0.5)));
+  scene.Add(std::make_shared<PointLightSource>(
+      double4{5, 3, -5, 1}, Spectrum::MakeConstant(0.5)));
 
   return scene;
 }
 
 static Camera SetUpCamera() {
-  Camera camera(16.0 / 9.0, 1, 1);
-  camera.transform.Translate(0, 0, -5);
+  Camera camera(16.0 / 9.0, 1, 2);
+  camera.transform.Translate(0, 0, -10);
   return camera;
 }
 

@@ -12,6 +12,9 @@ namespace deer {
 
 namespace test {
 
+static bool (&near_equal)(const double4 &, const double4 &)
+    = NearEqualForTesting;
+
 class TransformTest : public ::testing::Test {};
 
 TEST_F(TransformTest, AffineTransformTranslate) {
@@ -62,8 +65,6 @@ TEST_F(TransformTest, AffineTransformInverse) {
       .Translate(2, 3, 1)
       .RotateY(2)
       .Scale(1, 3, 2);
-
-  bool (&near_equal)(const double4 &, const double4 &) = NearEqualForTesting;
 
   auto p_trans = transform.ApplyInverse(transform.Apply(point));
   EXPECT_TRUE(near_equal(p_trans, point));

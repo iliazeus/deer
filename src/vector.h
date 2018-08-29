@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 
 namespace deer {
 
@@ -289,9 +290,10 @@ using byte2 = Vector<std::uint8_t, 2>;
 using byte3 = Vector<std::uint8_t, 3>;
 using byte4 = Vector<std::uint8_t, 4>;
 
+namespace test {
+
 template<class T, std::size_t N>
-bool NearEqualForTesting(
-    const Vector<T, N> &a, const Vector<T, N> &b) {
+bool near_equal(const Vector<T, N> &a, const Vector<T, N> &b) {
   const double EPS = 1e-6;
   for (std::size_t i = 0; i < N; i++) {
     if (std::isnan(a[i]) || std::isnan(b[i])) return false;
@@ -299,6 +301,14 @@ bool NearEqualForTesting(
   }
   return true;
 }
+
+template<class T, std::size_t N>
+std::ostream &operator<<(std::ostream &stream, const Vector<T, N> &v) {
+  for (const auto &element : v) stream << element << ' ';
+  return stream;
+}
+
+}  // namespace test
 
 }  // namespace deer
 

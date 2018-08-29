@@ -158,11 +158,13 @@ AffineTransform AffineTransform::MakeRotationX(double angle) {
   return result;
 }
 
+namespace test {
 
-bool NearEqualForTesting(
-    const AffineTransform &a, const AffineTransform &b) {
-  return NearEqualForTesting(a.matrix_, b.matrix_)
-      && NearEqualForTesting(a.inv_matrix_, b.inv_matrix_);
+bool near_equal(const AffineTransform &a, const AffineTransform &b) {
+  return near_equal(a.matrix(), b.matrix())
+      && near_equal(a.inverse_matrix(), b.inverse_matrix());
 }
+
+}  // namespace test
 
 }  // namespace deer

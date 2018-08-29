@@ -12,9 +12,6 @@ namespace deer {
 
 namespace test {
 
-static bool (&near_equal)(const double4 &, const double4 &)
-    = NearEqualForTesting;
-
 class TransformTest : public ::testing::Test {};
 
 TEST_F(TransformTest, AffineTransformTranslate) {

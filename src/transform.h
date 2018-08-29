@@ -52,16 +52,17 @@ class AffineTransform {
   double4 Apply(double4 v) const { return matrix_ * v; }
   double4 ApplyInverse(double4 v) const { return inv_matrix_ * v; }
 
-  friend bool NearEqualForTesting(
-      const AffineTransform &a, const AffineTransform &b);
-
  protected:
   double4x4 matrix_, inv_matrix_;
 
   AffineTransform(double4x4 matrix, double4x4 inv_matrix);
 };
 
-bool NearEqualForTesting(const AffineTransform &a, const AffineTransform &b);
+namespace test {
+
+bool near_equal(const AffineTransform &a, const AffineTransform &b);
+
+}  // namespace test
 
 }  // namespace deer
 

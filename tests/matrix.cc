@@ -143,9 +143,6 @@ TEST_F(MatrixTest, Test4x4) {
   double4x4 ab = a * b;
   double4x4 ba = b * a;
 
-  bool (&near_equal)(const double4x4 &, const double4x4 &)
-      = NearEqualForTesting;
-
   EXPECT_TRUE(near_equal(ab * inverse(b), a));
   EXPECT_TRUE(near_equal(ab.inverse(), b.inverse() * a.inverse()));
   EXPECT_EQ(double4x4::id().inverse(), double4x4::id());

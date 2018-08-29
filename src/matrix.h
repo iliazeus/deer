@@ -338,14 +338,17 @@ using double2x2 = Matrix<double, 2>;
 using double3x3 = Matrix<double, 3>;
 using double4x4 = Matrix<double, 4>;
 
+namespace test {
+
 template<class T, std::size_t N>
-bool NearEqualForTesting(
-    const Matrix<T, N> &a, const Matrix<T, N> &b) {
+bool near_equal(const Matrix<T, N> &a, const Matrix<T, N> &b) {
   for (std::size_t i = 0; i < N; i++) {
-    if (!NearEqualForTesting(a[i], b[i])) return false;
+    if (!near_equal(a[i], b[i])) return false;
   }
   return true;
 }
+
+}  // namespace test
 
 }  // namespace deer
 

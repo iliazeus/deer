@@ -15,8 +15,15 @@ namespace deer {
 
 namespace test {
 
-static bool (&near_equal)(const double4 &, const double4 &)
-    = NearEqualForTesting;
+static bool near_equal(const RayIntersection &a, const RayIntersection &b) {
+  if (!near_equal(a.point, b.point)) {
+    return false;
+  }
+  if (dot(a.normal, b.normal) / (length(a.normal)*length(b.normal)) < 0.99) {
+    return false;
+  }
+  return true;
+}
 
 class XYPlaneGeometryTest : public ::testing::Test {
  protected:

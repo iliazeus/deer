@@ -274,6 +274,14 @@ Vector<T, 3> cross(const Vector<T, 3> &a, const Vector<T, 3> &b) {
   return result;
 }
 
+template<class T>
+Vector<T, 4> cross(const Vector<T, 4> &a, const Vector<T, 4> &b) {
+  Vector<T, 3> a3 = {a[0], a[1], a[2]};
+  Vector<T, 3> b3 = {b[0], b[1], b[2]};
+  Vector<T, 3> result3 = cross(a3, b3);
+  return {result3[0], result3[1], result3[2], 0};
+}
+
 using int2 = Vector<int, 2>;
 using int3 = Vector<int, 3>;
 using int4 = Vector<int, 4>;

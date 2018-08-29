@@ -5,9 +5,12 @@
 #ifndef DEER_GEOMETRY_H_
 #define DEER_GEOMETRY_H_
 
+#include <array>
 #include <optional>
+#include <vector>
 
 #include "optics.h"
+#include "transform.h"
 #include "vector.h"
 
 namespace deer {
@@ -26,6 +29,18 @@ struct XYPlaneGeometry : public Geometry {
 struct UnitSphereGeometry : public Geometry {
   std::optional<RayIntersection> IntersectWithRay(
       const Ray &) const override;
+};
+
+class TrianglesGeometry : public Geometry {
+ public:
+  explicit TrianglesGeometry(
+      const std::vector<std::array<double4, 3>> &triangles);
+
+  std::optional<RayIntersection> IntersectWithRay(
+      const Ray &) const override;
+
+ private:
+  std::vector<AffineTransform> transforms_;
 };
 
 }  // namespace deer

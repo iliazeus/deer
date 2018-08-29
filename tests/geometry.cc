@@ -4,6 +4,7 @@
 
 #include "../src/geometry.h"
 
+#include <iostream>
 #include <optional>
 
 #include <gtest/gtest.h>
@@ -66,6 +67,34 @@ TEST_F(UnitSphereGeometryTest, IntersectWithRayWorks) {
   EXPECT_TRUE(sphere_.IntersectWithRay(inner_ray).has_value());
   outer_ray.direction *= -1;
   EXPECT_FALSE(sphere_.IntersectWithRay(outer_ray).has_value());
+}
+
+
+class TrianglesGeometryTetrahedronTest : public ::testing::Test {
+ protected:
+  TrianglesGeometry tetrahedron_ = TrianglesGeometry({
+    {double4{0, 0, 0, 1}, double4{1, 0, 0, 1}, double4{0, 1, 0, 1}},
+    {double4{0, 0, 0, 1}, double4{0, 1, 0, 1}, double4{0, 0, 1, 1}},
+    {double4{0, 0, 0, 1}, double4{0, 0, 1, 1}, double4{1, 0, 0, 1}},
+    {double4{1, 0, 0, 1}, double4{0, 1, 0, 1}, double4{0, 0, 1, 1}},
+  });
+};
+
+TEST_F(TrianglesGeometryTetrahedronTest, IntersectWithRayWorks) {
+  auto ray1 = Ray{double4{-3, 0.25, 0.25, 1}, double4{1, 0, 0, 0}};
+  auto expected_isec1 =
+      RayIntersection{double4{0, 0.25, 0.25, 1}, double4{-1, 0, 0, 0}};
+  auto isec1 = tetrahedron_.IntersectWithRay(ray1);
+  EXPECT_TRUE(isec1.has_value());
+  EXPECT_TRUE(near_equal(expected_isec1, *isec1));
+
+  auto ray2 = Ray{double4{3, 3, 3, 1}, double4{-1, -1, -1, 0}};
+  auto expected_isec2 =
+      RayIntersection{double4{1/3.0, 1/3.0, 1/3.0, 1},
+      double4{1/3.0, 1/3.0, 1/3.0, 0}};
+  auto isec2 = tetrahedron_.IntersectWithRay(ray2);
+  EXPECT_TRUE(isec2.has_value());
+  EXPECT_TRUE(near_equal(expected_isec2, *isec2));
 }
 
 }  // namespace test

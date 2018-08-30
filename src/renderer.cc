@@ -25,9 +25,6 @@ namespace deer {
 
 namespace {
 
-// TODO(iliazeus): a proper parallelization
-constexpr auto kLaunchPolicy = std::launch::deferred;
-
 Ray RayThroughPixel(const RayTracer &tracer,
                     const Camera &camera,
                     std::size_t row, std::size_t col) {
@@ -99,37 +96,23 @@ void RenderPixels(const RayTracer &tracer,
                   const Camera &camera,
                   std::promise<std::vector<std::uint8_t>> &&result_promise,
                   std::shared_ptr<Renderer::JobStatus> job_status) {
-  const std::size_t kMaxQueueLength = 50;
-
-  std::vector<std::uint8_t> result;
-  result.reserve(tracer.options.image_width * tracer.options.image_height);
-  std::queue<std::future<Spectrum>> queue;
-
+  const std::size_t result_size =
+      tracer.options.image_width * tracer.options.image_height * 3;
+  std::vector<std::uint8_t> result(result_size);
+  const double amount_done_per_pixel = 1.0 / result_size;
+#pragma omp parallel for
   for (std::size_t row = 0; row < tracer.options.image_height; row++) {
     for (std::size_t col = 0; col < tracer.options.image_width; col++) {
-      while (queue.size() >= kMaxQueueLength) {
-        queue.front().wait();
-        auto spectrum = queue.front().get();
-        queue.pop();
-        auto rgb_bytes = tracer.options.color_profile.ToRgbBytes(spectrum);
-        result.insert(result.end(), rgb_bytes.begin(), rgb_bytes.end());
-      }
-
       Ray ray = RayThroughPixel(tracer, camera, row, col);
-      auto future = std::async(std::launch::deferred,
-          TraceRay, tracer, scene, ray);
-      queue.push(std::move(future));
+      auto spectrum = TraceRay(tracer, scene, ray);
+      auto rgb_bytes = tracer.options.color_profile.ToRgbBytes(spectrum);
+      result[row*tracer.options.image_width*3 + col*3 + 0] = rgb_bytes[0];
+      result[row*tracer.options.image_width*3 + col*3 + 1] = rgb_bytes[1];
+      result[row*tracer.options.image_width*3 + col*3 + 2] = rgb_bytes[2];
+      // A race condition doesn't really bother us here
+      job_status->amount_done += amount_done_per_pixel;
     }
   }
-
-  while (!queue.empty()) {
-    queue.front().wait();
-    auto spectrum = queue.front().get();
-    queue.pop();
-    auto rgb_bytes = tracer.options.color_profile.ToRgbBytes(spectrum);
-    result.insert(result.end(), rgb_bytes.begin(), rgb_bytes.end());
-  }
-
   result_promise.set_value(std::move(result));
   job_status->amount_done = 1.0;
 }
@@ -138,7 +121,6 @@ void RenderPixels(const RayTracer &tracer,
 
 std::shared_ptr<Renderer::JobStatus> RayTracer::Render(const Scene &scene,
     const Camera &camera) {
-  // TODO(iliazeus): track the amount_done
   auto job_status = std::make_shared<Renderer::JobStatus>();
   job_status->amount_done = 0;
   std::promise<std::vector<std::uint8_t>> result_promise;

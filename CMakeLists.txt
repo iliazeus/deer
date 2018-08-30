@@ -13,7 +13,7 @@ include_directories(src)
 set(CMAKE_BUILD_TYPE Debug)
 
 
-set(CMAKE_CXX_FLAGS "-std=c++17 -pthread")
+set(CMAKE_CXX_FLAGS "-std=c++17 -pthread -fopenmp")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -ffast-math -mrecip -fno-exceptions -fno-rtti")

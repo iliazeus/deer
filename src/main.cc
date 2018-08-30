@@ -3,7 +3,9 @@
 // See the LICENSE.txt file for details.
 
 #include <array>
+#include <chrono>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -157,6 +159,17 @@ int main(int argc, char **argv) {
   RayTracer renderer = SetUpRayTracer();
 
   auto job_status = renderer.Render(scene, camera);
+
+  std::cout << "Rendering...  0% done";
+  while (job_status->amount_done < 1.0) {
+    std::cout << "\b\b\b\b\b\b\b\b";
+    std::cout << std::setw(2) << std::trunc(job_status->amount_done * 100);
+    std::cout << "% done";
+    std::cout.flush();
+    job_status->result.wait_for(std::chrono::milliseconds(500));
+  }
+  std::cout << "\b\b\b\b\b\b\b\b100% done\n";
+
   auto image_data = job_status->result.get();
 
   TgaImageFile image_file(argv[1], std::ios::out | std::ios::binary);

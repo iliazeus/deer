@@ -91,15 +91,14 @@ Spectrum TraceRay(const RayTracer &tracer,
   return result_spectrum;
 }
 
-void RenderPixels(const RayTracer &tracer,
-                  const Scene &scene,
-                  const Camera &camera,
-                  std::promise<std::vector<std::uint8_t>> &&result_promise,
-                  std::shared_ptr<Renderer::JobStatus> job_status) {
+std::vector<std::uint8_t> RenderPixels(const RayTracer &tracer,
+                          const Scene &scene,
+                          const Camera &camera,
+                          std::shared_ptr<Renderer::JobStatus> job_status) {
   const std::size_t result_size =
       tracer.options.image_width * tracer.options.image_height * 3;
   std::vector<std::uint8_t> result(result_size);
-  const double amount_done_per_pixel = 1.0 / result_size;
+  const double amount_done_per_pixel = 1.0 / (result_size / 3.0);
 #pragma omp parallel for
   for (std::size_t row = 0; row < tracer.options.image_height; row++) {
     for (std::size_t col = 0; col < tracer.options.image_width; col++) {
@@ -113,8 +112,8 @@ void RenderPixels(const RayTracer &tracer,
       job_status->amount_done += amount_done_per_pixel;
     }
   }
-  result_promise.set_value(std::move(result));
   job_status->amount_done = 1.0;
+  return result;
 }
 
 }  // namespace
@@ -123,10 +122,8 @@ std::shared_ptr<Renderer::JobStatus> RayTracer::Render(const Scene &scene,
     const Camera &camera) {
   auto job_status = std::make_shared<Renderer::JobStatus>();
   job_status->amount_done = 0;
-  std::promise<std::vector<std::uint8_t>> result_promise;
-  job_status->result = result_promise.get_future();
-  std::async(std::launch::async, RenderPixels, *this,
-      scene, camera, std::move(result_promise), job_status);
+  job_status->result = std::async(std::launch::async,
+      RenderPixels, *this, scene, camera, job_status);
   return job_status;
 }
 
